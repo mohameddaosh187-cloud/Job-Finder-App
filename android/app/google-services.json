@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "319494273757",
+    "project_id": "job-finder-651a3",
+    "storage_bucket": "job-finder-651a3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:319494273757:android:1fe30c49a5c97418363934",
+        "android_client_info": {
+          "package_name": "com.example.job_finder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApEx7YnYZJIjikviZ1oXgD46WPcpwSZkU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
