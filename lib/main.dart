@@ -25,7 +25,7 @@ class JobFinderApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFF6F8FC),
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF385CF2)),
       ),
-      initialRoute: AppRoutes.welcome,
+      initialRoute: AppRoutes.main,
       onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
