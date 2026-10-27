@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../data/model/job_model.dart';
 
-class JobDetailsScreen extends StatelessWidget {
+import '../../../data/model/job_model.dart';
+import '../../../../profile/data/saved_jobs_service.dart';
+
+class JobDetailsScreen extends StatefulWidget {
   final JobModel job;
 
   const JobDetailsScreen({
@@ -13,13 +15,117 @@ class JobDetailsScreen extends StatelessWidget {
   static const Color primaryBlue = Color(0xFF3563E9);
   static const Color pageBackground = Color(0xFFF6F8FC);
 
+  @override
+  State<JobDetailsScreen> createState() => _JobDetailsScreenState();
+}
+
+class _JobDetailsScreenState extends State<JobDetailsScreen> {
+  final SavedJobsService _savedJobsService = SavedJobsService();
+
+  bool _isSaved = false;
+  bool _isCheckingSaved = true;
+  bool _isSaving = false;
+
+  JobModel get job => widget.job;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIfSaved();
+  }
+
+  Future<void> _checkIfSaved() async {
+    try {
+      final saved = await _savedJobsService.isSaved(job.id.toString());
+
+      if (!mounted) return;
+
+      setState(() {
+        _isSaved = saved;
+        _isCheckingSaved = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _isCheckingSaved = false;
+      });
+    }
+  }
+
+  Map<String, dynamic> _jobToMap() {
+    return {
+      'id': job.id.toString(),
+      'title': job.title,
+      'companyName': job.companyName,
+      'location': job.location,
+      'description': job.description,
+      'jobType': job.jobType,
+      'salary': job.salary,
+      'logoUrl': job.logoUrl,
+      'category': job.category,
+      'jobUrl': job.jobUrl,
+    };
+  }
+
+  Future<void> _toggleSaved() async {
+    if (_isSaving || _isCheckingSaved) return;
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final jobId = job.id.toString();
+
+      if (_isSaved) {
+        await _savedJobsService.removeJob(jobId);
+      } else {
+        await _savedJobsService.saveJob(_jobToMap());
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        _isSaved = !_isSaved;
+        _isSaving = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _isSaved
+                ? 'Job added to Saved Jobs'
+                : 'Job removed from Saved Jobs',
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _isSaving = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Could not update saved job. Please try again.',
+          ),
+        ),
+      );
+    }
+  }
+
   Future<void> _applyForJob(BuildContext context) async {
     final url = job.jobUrl?.trim() ?? '';
 
     if (url.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Application link is not available for this job.'),
+          content: Text(
+            'Application link is not available for this job.',
+          ),
         ),
       );
       return;
@@ -55,7 +161,9 @@ class JobDetailsScreen extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Something went wrong while opening the link.'),
+            content: Text(
+              'Something went wrong while opening the link.',
+            ),
           ),
         );
       }
@@ -72,29 +180,38 @@ class JobDetailsScreen extends StatelessWidget {
     final companyName = job.companyName.trim();
 
     return Scaffold(
-      backgroundColor: pageBackground,
+      backgroundColor: JobDetailsScreen.pageBackground,
       appBar: AppBar(
         title: const Text(
           'Job Details',
           style: TextStyle(fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
-        backgroundColor: pageBackground,
+        backgroundColor: JobDetailsScreen.pageBackground,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
-            tooltip: 'Save job',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Saved jobs feature will be connected later.',
+            tooltip: _isSaved ? 'Remove saved job' : 'Save job',
+            onPressed: _isSaving || _isCheckingSaved
+                ? null
+                : _toggleSaved,
+            icon: _isSaving || _isCheckingSaved
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Icon(
+                    _isSaved
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_border_rounded,
+                    color: _isSaved
+                        ? JobDetailsScreen.primaryBlue
+                        : null,
                   ),
-                ),
-              );
-            },
-            icon: const Icon(Icons.bookmark_border_rounded),
           ),
         ],
       ),
@@ -110,7 +227,9 @@ class JobDetailsScreen extends StatelessWidget {
               const SizedBox(height: 20),
               Center(
                 child: Text(
-                  job.title.trim().isEmpty ? 'Untitled Job' : job.title,
+                  job.title.trim().isEmpty
+                      ? 'Untitled Job'
+                      : job.title,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w800,
@@ -121,7 +240,9 @@ class JobDetailsScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  companyName.isEmpty ? 'Company not specified' : companyName,
+                  companyName.isEmpty
+                      ? 'Company not specified'
+                      : companyName,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: const Color(0xFF697386),
@@ -137,7 +258,9 @@ class JobDetailsScreen extends StatelessWidget {
                 children: [
                   _InfoChip(
                     icon: Icons.location_on_outlined,
-                    label: location.isEmpty ? 'Remote / Not specified' : location,
+                    label: location.isEmpty
+                        ? 'Remote / Not specified'
+                        : location,
                   ),
                   if (jobType.isNotEmpty)
                     _InfoChip(
@@ -160,7 +283,7 @@ class JobDetailsScreen extends StatelessWidget {
                     salary,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: primaryBlue,
+                      color: JobDetailsScreen.primaryBlue,
                     ),
                   ),
                 ),
@@ -207,7 +330,7 @@ class JobDetailsScreen extends StatelessWidget {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryBlue,
+                    backgroundColor: JobDetailsScreen.primaryBlue,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -258,7 +381,9 @@ class JobDetailsScreen extends StatelessWidget {
 
     result = result.replaceAll(RegExp(r'\n{3,}'), '\n\n').trim();
 
-    return result.isEmpty ? 'No description available for this job.' : result;
+    return result.isEmpty
+        ? 'No description available for this job.'
+        : result;
   }
 }
 
@@ -287,7 +412,7 @@ class _CompanyLogo extends StatelessWidget {
           : Image.network(
               url,
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => const _FallbackLogo(),
+              errorBuilder: (_, _, _) => const _FallbackLogo(),
               loadingBuilder: (context, child, progress) {
                 if (progress == null) return child;
 

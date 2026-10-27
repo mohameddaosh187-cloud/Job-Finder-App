@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../data/model/job_model.dart';
+import 'package:job_finder/features/profile/data/saved_jobs_service.dart';
 
-class JobCard extends StatelessWidget {
+import '../../../data/model/job_model.dart';
+class JobCard extends StatefulWidget {
   final JobModel job;
   final VoidCallback? onTap;
 
@@ -10,6 +11,109 @@ class JobCard extends StatelessWidget {
     required this.job,
     this.onTap,
   });
+
+  @override
+  State<JobCard> createState() => _JobCardState();
+}
+
+class _JobCardState extends State<JobCard> {
+  final SavedJobsService _service = SavedJobsService();
+
+  bool _isSaved = false;
+  bool _isSaving = false;
+
+  static const Color _primaryBlue = Color(0xFF2457D6);
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadSavedState();
+
+    SavedJobsService.changes.addListener(_onSavedJobsChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant JobCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.job.id != widget.job.id) {
+      _loadSavedState();
+    }
+  }
+
+  @override
+  void dispose() {
+    SavedJobsService.changes.removeListener(_onSavedJobsChanged);
+    super.dispose();
+  }
+
+  Future<void> _loadSavedState() async {
+    try {
+      final saved = await _service.isSaved(widget.job.id);
+
+      if (!mounted) return;
+
+      setState(() {
+        _isSaved = saved;
+      });
+    } catch (_) {
+      // نحتفظ بحالة الكارت الحالية لو تعذرت قراءة البيانات.
+    }
+  }
+
+  void _onSavedJobsChanged() {
+    _loadSavedState();
+  }
+
+  Future<void> _toggleSaved() async {
+    if (_isSaving) return;
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final currentlySaved = await _service.isSaved(widget.job.id);
+
+      if (currentlySaved) {
+        await _service.removeJob(widget.job.id);
+      } else {
+        await _service.saveJob(widget.job.toJson());
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        _isSaved = !currentlySaved;
+        _isSaving = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            currentlySaved
+                ? 'Job removed from saved jobs'
+                : 'Job saved successfully',
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isSaving = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not update saved job: $e'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +130,7 @@ class JobCard extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        onTap: onTap,
+        onTap: widget.onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -40,7 +144,7 @@ class JobCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      job.title,
+                      widget.job.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
@@ -49,7 +153,7 @@ class JobCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      job.companyName,
+                      widget.job.companyName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodyMedium?.copyWith(
@@ -67,7 +171,7 @@ class JobCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            job.location,
+                            widget.job.location,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodySmall,
@@ -76,7 +180,7 @@ class JobCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    if (job.jobType.isNotEmpty)
+                    if (widget.job.jobType.isNotEmpty)
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
@@ -87,7 +191,7 @@ class JobCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          job.jobType,
+                          widget.job.jobType,
                           style: TextStyle(
                             color: Colors.blue.shade800,
                             fontSize: 12,
@@ -95,11 +199,11 @@ class JobCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                    if (job.salary != null &&
-                        job.salary!.trim().isNotEmpty) ...[
+                    if (widget.job.salary != null &&
+                        widget.job.salary!.trim().isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Text(
-                        job.salary!,
+                        widget.job.salary!,
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                         ),
@@ -108,10 +212,26 @@ class JobCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.bookmark_border,
-                color: Colors.grey.shade600,
+              const SizedBox(width: 4),
+              IconButton(
+                tooltip: _isSaved ? 'Remove saved job' : 'Save job',
+                onPressed: _isSaving ? null : _toggleSaved,
+                icon: _isSaving
+                    ? const SizedBox(
+                        width: 21,
+                        height: 21,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Icon(
+                        _isSaved
+                            ? Icons.bookmark_rounded
+                            : Icons.bookmark_border_rounded,
+                      ),
+                color: _isSaved
+                    ? _primaryBlue
+                    : Colors.grey.shade600,
               ),
             ],
           ),
@@ -121,7 +241,7 @@ class JobCard extends StatelessWidget {
   }
 
   Widget _buildCompanyLogo() {
-    final logo = job.logoUrl;
+    final logo = widget.job.logoUrl;
 
     if (logo != null && logo.trim().isNotEmpty) {
       return ClipRRect(
