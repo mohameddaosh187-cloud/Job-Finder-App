@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:job_finder/core/routes/theme/locale_controller.dart';
+
 const Color _primaryBlue = Color(0xFF385CF2);
-const Color _pageBackground = Color(0xFFF6F8FC);
-const Color _textDark = Color(0xFF172033);
-const Color _textMuted = Color(0xFF7B8497);
-const Color _borderColor = Color(0xFFE5EAF3);
 
 class JobPreferencesScreen extends StatefulWidget {
   const JobPreferencesScreen({super.key});
@@ -34,6 +32,30 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
     'Internship',
   ];
 
+  bool get _isArabic =>
+      LocaleController.instance.locale.languageCode == 'ar';
+
+  String _text(String english, String arabic) {
+    return _isArabic ? arabic : english;
+  }
+
+  String _jobTypeLabel(String type) {
+    switch (type) {
+      case 'Full-time':
+        return _text('Full-time', 'دوام كامل');
+      case 'Part-time':
+        return _text('Part-time', 'دوام جزئي');
+      case 'Remote':
+        return _text('Remote', 'عن بُعد');
+      case 'Contract':
+        return _text('Contract', 'عقد عمل');
+      case 'Internship':
+        return _text('Internship', 'تدريب');
+      default:
+        return type;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -58,11 +80,16 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
       if (savedJobType != null && _jobTypes.contains(savedJobType)) {
         _jobType = savedJobType;
       }
-    } catch (error) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not load your preferences.'),
+          SnackBar(
+            content: Text(
+              _text(
+                'Could not load your preferences.',
+                'تعذر تحميل تفضيلاتك.',
+              ),
+            ),
           ),
         );
       }
@@ -102,23 +129,36 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
         _salaryController.text.trim(),
       );
 
-      await prefs.setString('profile_job_type', _jobType);
+      await prefs.setString(
+        'profile_job_type',
+        _jobType,
+      );
 
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Job preferences saved successfully.'),
+        SnackBar(
+          content: Text(
+            _text(
+              'Job preferences saved successfully.',
+              'تم حفظ تفضيلات الوظائف بنجاح.',
+            ),
+          ),
         ),
       );
 
       Navigator.of(context).pop(true);
-    } catch (error) {
+    } catch (_) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to save job preferences.'),
+        SnackBar(
+          content: Text(
+            _text(
+              'Failed to save job preferences.',
+              'فشل حفظ تفضيلات الوظائف.',
+            ),
+          ),
         ),
       );
     } finally {
@@ -140,167 +180,286 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _pageBackground,
-      appBar: AppBar(
-        backgroundColor: _pageBackground,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: _textDark),
-        title: const Text(
-          'Job preferences',
-          style: TextStyle(
-            color: _textDark,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    const Text(
-                      'Find the right opportunity',
-                      style: TextStyle(
-                        color: _textDark,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Set your preferences to focus on jobs that match your goals.',
-                      style: TextStyle(
-                        color: _textMuted,
-                        fontSize: 13,
-                      ),
-                    ),
-                    const SizedBox(height: 28),
+    return AnimatedBuilder(
+      animation: LocaleController.instance,
+      builder: (context, child) {
+        final theme = Theme.of(context);
+        final colors = theme.colorScheme;
 
-                    _fieldLabel('Desired job title'),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _jobTitleController,
-                      textCapitalization: TextCapitalization.words,
-                      decoration: _inputDecoration(
-                        hint: 'e.g. Flutter Developer',
-                        icon: Icons.work_outline_rounded,
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter your desired job title.';
-                        }
-                        return null;
-                      },
-                    ),
+        final pageBackground = theme.scaffoldBackgroundColor;
+        final surfaceColor = theme.cardColor;
+        final textColor = colors.onSurface;
+        final mutedColor = colors.onSurfaceVariant;
+        final borderColor = theme.dividerColor;
+        final primaryColor = colors.primary;
 
-                    const SizedBox(height: 22),
-                    _fieldLabel('Preferred location'),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _locationController,
-                      textCapitalization: TextCapitalization.words,
-                      decoration: _inputDecoration(
-                        hint: 'e.g. Cairo or Remote',
-                        icon: Icons.location_on_outlined,
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter your preferred location.';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 22),
-                    _fieldLabel('Expected salary'),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _salaryController,
-                      keyboardType: TextInputType.number,
-                      decoration: _inputDecoration(
-                        hint: 'e.g. 15000 EGP',
-                        icon: Icons.payments_outlined,
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter your expected salary.';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 22),
-                    _fieldLabel('Employment type'),
-                    const SizedBox(height: 8),
-                    DropdownButtonFormField<String>(
-                      initialValue: _jobType,
-                      decoration: _inputDecoration(
-                        hint: 'Choose employment type',
-                        icon: Icons.schedule_rounded,
-                      ),
-                      items: _jobTypes.map((type) {
-                        return DropdownMenuItem<String>(
-                          value: type,
-                          child: Text(type),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _jobType = value;
-                          });
-                        }
-                      },
-                    ),
-
-                    const SizedBox(height: 32),
-                    SizedBox(
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: _isSaving ? null : _savePreferences,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryBlue,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor:
-                              _primaryBlue.withValues(alpha: 0.5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: _isSaving
-                            ? const SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Text(
-                                'Save preferences',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ],
+        return Directionality(
+          textDirection:
+              _isArabic ? TextDirection.rtl : TextDirection.ltr,
+          child: Scaffold(
+            backgroundColor: pageBackground,
+            appBar: AppBar(
+              backgroundColor:
+                  theme.appBarTheme.backgroundColor ?? pageBackground,
+              foregroundColor: textColor,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              title: Text(
+                _text('Job preferences', 'تفضيلات الوظائف'),
+                style: TextStyle(
+                  color: textColor,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ),
+            body: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: primaryColor,
+                    ),
+                  )
+                : SafeArea(
+                    child: Form(
+                      key: _formKey,
+                      child: ListView(
+                        padding: const EdgeInsets.all(20),
+                        children: [
+                          Text(
+                            _text(
+                              'Find the right opportunity',
+                              'اعثر على الفرصة المناسبة',
+                            ),
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _text(
+                              'Set your preferences to focus on jobs '
+                              'that match your goals.',
+                              'حدد تفضيلاتك للتركيز على الوظائف '
+                              'التي تتناسب مع أهدافك.',
+                            ),
+                            style: TextStyle(
+                              color: mutedColor,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+                          _fieldLabel(
+                            _text(
+                              'Desired job title',
+                              'المسمى الوظيفي المطلوب',
+                            ),
+                            textColor,
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _jobTitleController,
+                            textCapitalization: TextCapitalization.words,
+                            style: TextStyle(color: textColor),
+                            decoration: _inputDecoration(
+                              hint: _text(
+                                'e.g. Flutter Developer',
+                                'مثال: مطور Flutter',
+                              ),
+                              icon: Icons.work_outline_rounded,
+                              textColor: textColor,
+                              mutedColor: mutedColor,
+                              surfaceColor: surfaceColor,
+                              borderColor: borderColor,
+                              primaryColor: primaryColor,
+                            ),
+                            validator: (value) {
+                              if (value == null ||
+                                  value.trim().isEmpty) {
+                                return _text(
+                                  'Please enter your desired job title.',
+                                  'من فضلك أدخل المسمى الوظيفي المطلوب.',
+                                );
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 22),
+                          _fieldLabel(
+                            _text(
+                              'Preferred location',
+                              'الموقع المفضل',
+                            ),
+                            textColor,
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _locationController,
+                            textCapitalization: TextCapitalization.words,
+                            style: TextStyle(color: textColor),
+                            decoration: _inputDecoration(
+                              hint: _text(
+                                'e.g. Cairo or Remote',
+                                'مثال: القاهرة أو عن بُعد',
+                              ),
+                              icon: Icons.location_on_outlined,
+                              textColor: textColor,
+                              mutedColor: mutedColor,
+                              surfaceColor: surfaceColor,
+                              borderColor: borderColor,
+                              primaryColor: primaryColor,
+                            ),
+                            validator: (value) {
+                              if (value == null ||
+                                  value.trim().isEmpty) {
+                                return _text(
+                                  'Please enter your preferred location.',
+                                  'من فضلك أدخل الموقع المفضل.',
+                                );
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 22),
+                          _fieldLabel(
+                            _text(
+                              'Expected salary',
+                              'الراتب المتوقع',
+                            ),
+                            textColor,
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _salaryController,
+                            keyboardType: TextInputType.number,
+                            style: TextStyle(color: textColor),
+                            decoration: _inputDecoration(
+                              hint: _text(
+                                'e.g. 15000 EGP',
+                                'مثال: 15000 جنيه',
+                              ),
+                              icon: Icons.payments_outlined,
+                              textColor: textColor,
+                              mutedColor: mutedColor,
+                              surfaceColor: surfaceColor,
+                              borderColor: borderColor,
+                              primaryColor: primaryColor,
+                            ),
+                            validator: (value) {
+                              if (value == null ||
+                                  value.trim().isEmpty) {
+                                return _text(
+                                  'Please enter your expected salary.',
+                                  'من فضلك أدخل الراتب المتوقع.',
+                                );
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 22),
+                          _fieldLabel(
+                            _text(
+                              'Employment type',
+                              'نوع التوظيف',
+                            ),
+                            textColor,
+                          ),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            initialValue: _jobType,
+                            isExpanded: true,
+                            dropdownColor: surfaceColor,
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 14,
+                            ),
+                            iconEnabledColor: mutedColor,
+                            decoration: _inputDecoration(
+                              hint: _text(
+                                'Choose employment type',
+                                'اختر نوع التوظيف',
+                              ),
+                              icon: Icons.schedule_rounded,
+                              textColor: textColor,
+                              mutedColor: mutedColor,
+                              surfaceColor: surfaceColor,
+                              borderColor: borderColor,
+                              primaryColor: primaryColor,
+                            ),
+                            items: _jobTypes.map((type) {
+                              return DropdownMenuItem<String>(
+                                value: type,
+                                child: Text(
+                                  _jobTypeLabel(type),
+                                  style: TextStyle(
+                                    color: textColor,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _jobType = value;
+                                });
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 32),
+                          SizedBox(
+                            height: 52,
+                            child: ElevatedButton(
+                              onPressed: _isSaving
+                                  ? null
+                                  : _savePreferences,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _primaryBlue,
+                                foregroundColor: Colors.white,
+                                disabledBackgroundColor:
+                                    _primaryBlue.withValues(alpha: 0.5),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                              ),
+                              child: _isSaving
+                                  ? const SizedBox(
+                                      width: 22,
+                                      height: 22,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : Text(
+                                      _text(
+                                        'Save preferences',
+                                        'حفظ التفضيلات',
+                                      ),
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _fieldLabel(String label) {
+  Widget _fieldLabel(
+    String label,
+    Color textColor,
+  ) {
     return Text(
       label,
-      style: const TextStyle(
-        color: _textDark,
+      style: TextStyle(
+        color: textColor,
         fontSize: 14,
         fontWeight: FontWeight.w700,
       ),
@@ -310,30 +469,46 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
   InputDecoration _inputDecoration({
     required String hint,
     required IconData icon,
+    required Color textColor,
+    required Color mutedColor,
+    required Color surfaceColor,
+    required Color borderColor,
+    required Color primaryColor,
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(
-        color: _textMuted,
+      hintStyle: TextStyle(
+        color: mutedColor,
         fontSize: 13,
       ),
-      prefixIcon: Icon(icon, color: _primaryBlue),
+      prefixIcon: Icon(
+        icon,
+        color: primaryColor,
+      ),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: surfaceColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: _borderColor),
+        borderSide: BorderSide(
+          color: borderColor,
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: _borderColor),
+        borderSide: BorderSide(
+          color: borderColor,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(
-          color: _primaryBlue,
+        borderSide: BorderSide(
+          color: primaryColor,
           width: 1.5,
         ),
+      ),
+      errorStyle: const TextStyle(
+        color: Colors.redAccent,
+        fontSize: 12,
       ),
     );
   }

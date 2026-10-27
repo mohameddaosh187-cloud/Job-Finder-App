@@ -35,13 +35,13 @@ class ProfileService {
     final user = currentUser;
 
     if (user == null) {
-      throw Exception('No user is currently signed in.');
+      throw Exception('NO_USER_SIGNED_IN');
     }
 
     final trimmedName = name.trim();
 
     if (trimmedName.isEmpty) {
-      throw Exception('Name cannot be empty.');
+      throw Exception('NAME_CANNOT_BE_EMPTY');
     }
 
     await user.updateDisplayName(trimmedName);
@@ -52,7 +52,7 @@ class ProfileService {
     final user = currentUser;
 
     if (user == null) {
-      throw Exception('Please sign in first.');
+      throw Exception('PLEASE_SIGN_IN_FIRST');
     }
 
     final XFile? pickedImage = await _imagePicker.pickImage(

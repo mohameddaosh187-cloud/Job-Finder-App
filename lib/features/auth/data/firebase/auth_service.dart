@@ -4,14 +4,17 @@ import 'package:job_finder/features/auth/data/model/user_model.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Create a new account
+  // Create a new account.
   Future<UserModel> signUp({
     required String fullName,
     required String email,
     required String password,
   }) async {
+    final normalizedName = fullName.trim();
+    final normalizedEmail = email.trim();
+
     final credential = await _auth.createUserWithEmailAndPassword(
-      email: email.trim(),
+      email: normalizedEmail,
       password: password,
     );
 
@@ -21,22 +24,25 @@ class AuthService {
       throw Exception('Account creation failed.');
     }
 
-    await firebaseUser.updateDisplayName(fullName.trim());
+    await firebaseUser.updateDisplayName(normalizedName);
+    await firebaseUser.reload();
+
+    final updatedUser = _auth.currentUser;
 
     return UserModel(
       id: firebaseUser.uid,
-      fullName: fullName.trim(),
-      email: firebaseUser.email ?? email.trim(),
+      fullName: updatedUser?.displayName ?? normalizedName,
+      email: updatedUser?.email ?? normalizedEmail,
     );
   }
-
-  // Sign in an existing account
   Future<UserModel> signIn({
     required String email,
     required String password,
   }) async {
+    final normalizedEmail = email.trim();
+
     final credential = await _auth.signInWithEmailAndPassword(
-      email: email.trim(),
+      email: normalizedEmail,
       password: password,
     );
 
@@ -49,18 +55,12 @@ class AuthService {
     return UserModel(
       id: firebaseUser.uid,
       fullName: firebaseUser.displayName ?? '',
-      email: firebaseUser.email ?? email.trim(),
+      email: firebaseUser.email ?? normalizedEmail,
     );
   }
-
-  // Sign out
   Future<void> signOut() async {
     await _auth.signOut();
   }
-
-  // Current signed-in user
   User? get currentUser => _auth.currentUser;
-
-  // Authentication state
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 }

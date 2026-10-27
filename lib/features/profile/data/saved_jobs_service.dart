@@ -6,22 +6,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SavedJobsService {
   static const String _storageKey = 'saved_jobs';
 
-  // متابعة أي تغيير في الوظائف المحفوظة.
   static final ValueNotifier<int> changes = ValueNotifier<int>(0);
 
-  // جلب الوظائف المحفوظة.
   Future<List<Map<String, dynamic>>> getSavedJobs() async {
     final prefs = await SharedPreferences.getInstance();
     final savedData = prefs.getStringList(_storageKey) ?? [];
 
-    return savedData.map((item) {
-      final decoded = jsonDecode(item);
+    final List<Map<String, dynamic>> jobs = [];
 
-      return Map<String, dynamic>.from(decoded as Map);
-    }).toList();
+    for (final item in savedData) {
+      try {
+        final decoded = jsonDecode(item);
+
+        if (decoded is Map) {
+          jobs.add(Map<String, dynamic>.from(decoded));
+        }
+      } catch (_) {
+        continue;
+      }
+    }
+
+    return jobs;
   }
 
-  // التحقق من حالة حفظ الوظيفة.
   Future<bool> isSaved(String jobId) async {
     final jobs = await getSavedJobs();
 
@@ -30,7 +37,6 @@ class SavedJobsService {
     );
   }
 
-  // حفظ الوظيفة.
   Future<void> saveJob(Map<String, dynamic> job) async {
     final jobId = job['id']?.toString();
 
@@ -47,7 +53,7 @@ class SavedJobsService {
 
     if (alreadySaved) return;
 
-    jobs.add(job);
+    jobs.add(Map<String, dynamic>.from(job));
 
     final savedData = jobs
         .map((item) => jsonEncode(item))
@@ -62,15 +68,12 @@ class SavedJobsService {
       throw Exception('Failed to save job.');
     }
 
-    // تحديث الكروت وشاشة المحفوظات.
     changes.value++;
   }
 
-  // إزالة الوظيفة.
   Future<void> removeJob(String jobId) async {
     final prefs = await SharedPreferences.getInstance();
     final jobs = await getSavedJobs();
-
     final oldLength = jobs.length;
 
     jobs.removeWhere(
@@ -92,7 +95,6 @@ class SavedJobsService {
       throw Exception('Failed to remove saved job.');
     }
 
-    // إبلاغ باقي الشاشات بالتغيير.
     changes.value++;
   }
 }

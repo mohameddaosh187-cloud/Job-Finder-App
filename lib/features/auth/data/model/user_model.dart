@@ -3,13 +3,20 @@ class UserModel {
   final String fullName;
   final String email;
 
-  const UserModel({this.id, required this.fullName, required this.email});
+  const UserModel({
+    this.id,
+    required this.fullName,
+    required this.email,
+  });
 
   // Convert the user object to a Map.
   Map<String, dynamic> toJson() {
-    return {'id': id, 'fullName': fullName, 'email': email};
+    return {
+      'id': id,
+      'fullName': fullName,
+      'email': email,
+    };
   }
-
   // Create a user object from a Map.
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -19,7 +26,12 @@ class UserModel {
     );
   }
 
-  UserModel copyWith({String? id, String? fullName, String? email}) {
+  // Create a copy with updated values.
+  UserModel copyWith({
+    String? id,
+    String? fullName,
+    String? email,
+  }) {
     return UserModel(
       id: id ?? this.id,
       fullName: fullName ?? this.fullName,
