@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:job_finder/core/routes/theme/locale_controller.dart';
 
-class AuthTextField extends StatelessWidget {
+class AuthTextField extends StatefulWidget {
   final String label;
   final String hint;
   final IconData icon;
@@ -32,79 +33,149 @@ class AuthTextField extends StatelessWidget {
     this.autocorrect = true,
   });
 
-  static const Color navy = Color(0xFF17243D);
   static const Color blue = Color(0xFF385CF2);
-  static const Color subtitle = Color(0xFF6B7891);
-  static const Color borderColor = Color(0xFFE3E8F2);
+
+  @override
+  State<AuthTextField> createState() => _AuthTextFieldState();
+}
+
+class _AuthTextFieldState extends State<AuthTextField> {
+  bool get _isArabic =>
+      LocaleController.instance.locale.languageCode == 'ar';
+
+  @override
+  void initState() {
+    super.initState();
+    LocaleController.instance.addListener(_onLocaleChanged);
+  }
+
+  @override
+  void dispose() {
+    LocaleController.instance.removeListener(_onLocaleChanged);
+    super.dispose();
+  }
+
+  void _onLocaleChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: navy,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final labelColor = colors.onSurface;
+    final hintColor = colors.onSurfaceVariant;
+    final iconColor = colors.onSurfaceVariant;
+    final borderColor = theme.dividerColor;
+
+    final fieldColor = isDark
+        ? const Color(0xFF202633)
+        : Colors.white;
+
+    OutlineInputBorder buildBorder({
+      required Color color,
+      double width = 1,
+    }) {
+      return OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(
+          color: color,
+          width: width,
         ),
-        const SizedBox(height: 9),
-        TextFormField(
-          controller: controller,
-          validator: validator,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          obscureText: obscureText,
-          onFieldSubmitted: onFieldSubmitted,
-          textCapitalization: textCapitalization,
-          autofillHints: autofillHints,
-          autocorrect: autocorrect,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: const TextStyle(color: Color(0xFFA0A9BA), fontSize: 13),
-            prefixIcon: Icon(icon, color: subtitle, size: 21),
-            suffixIcon: onToggleVisibility == null
-                ? null
-                : IconButton(
-                    onPressed: onToggleVisibility,
-                    icon: Icon(
-                      obscureText
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      color: subtitle,
+      );
+    }
+
+    return Directionality(
+      textDirection: _isArabic ? TextDirection.rtl : TextDirection.ltr,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.label,
+            textAlign: _isArabic ? TextAlign.right : TextAlign.left,
+            style: TextStyle(
+              color: labelColor,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 9),
+          TextFormField(
+            controller: widget.controller,
+            validator: widget.validator,
+            keyboardType: widget.keyboardType,
+            textInputAction: widget.textInputAction,
+            obscureText: widget.obscureText,
+            onFieldSubmitted: widget.onFieldSubmitted,
+            textCapitalization: widget.textCapitalization,
+            autofillHints: widget.autofillHints,
+            autocorrect: widget.autocorrect,
+            textDirection:
+                widget.keyboardType == TextInputType.emailAddress
+                    ? TextDirection.ltr
+                    : (_isArabic ? TextDirection.rtl : TextDirection.ltr),
+            textAlign: widget.keyboardType == TextInputType.emailAddress
+                ? TextAlign.left
+                : (_isArabic ? TextAlign.right : TextAlign.left),
+            style: TextStyle(
+              color: colors.onSurface,
+              fontSize: 14,
+            ),
+            cursorColor: AuthTextField.blue,
+            decoration: InputDecoration(
+              hintText: widget.hint,
+              hintStyle: TextStyle(
+                color: hintColor,
+                fontSize: 13,
+              ),
+              prefixIcon: Icon(
+                widget.icon,
+                color: iconColor,
+                size: 21,
+              ),
+              suffixIcon: widget.onToggleVisibility == null
+                  ? null
+                  : IconButton(
+                      onPressed: widget.onToggleVisibility,
+                      tooltip: _isArabic
+                          ? (widget.obscureText
+                              ? 'إظهار كلمة المرور'
+                              : 'إخفاء كلمة المرور')
+                          : (widget.obscureText
+                              ? 'Show password'
+                              : 'Hide password'),
+                      icon: Icon(
+                        widget.obscureText
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        color: iconColor,
+                      ),
                     ),
-                  ),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 17,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: borderColor),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: borderColor),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: blue, width: 1.5),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Colors.red),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Colors.red, width: 1.5),
+              filled: true,
+              fillColor: fieldColor,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 17,
+              ),
+              border: buildBorder(color: borderColor),
+              enabledBorder: buildBorder(color: borderColor),
+              focusedBorder: buildBorder(
+                color: AuthTextField.blue,
+                width: 1.5,
+              ),
+              errorBorder: buildBorder(color: colors.error),
+              focusedErrorBorder: buildBorder(
+                color: colors.error,
+                width: 1.5,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -22,11 +22,14 @@ class HomeState {
     HomeStatus? status,
     List<JobModel>? jobs,
     String? errorMessage,
+    bool clearErrorMessage = false,
   }) {
     return HomeState(
       status: status ?? this.status,
       jobs: jobs ?? this.jobs,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: clearErrorMessage
+          ? null
+          : errorMessage ?? this.errorMessage,
     );
   }
 }

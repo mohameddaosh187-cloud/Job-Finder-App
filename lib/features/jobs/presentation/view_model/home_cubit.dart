@@ -4,40 +4,56 @@ import '../../data/api/job_api.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  final JobApi _jobApi;
+final JobApi _jobApi;
 
-  HomeCubit(this._jobApi) : super(const HomeState());
+int _latestRequestId = 0;
 
-  Future<void> fetchJobs({String? search}) async {
-    final query = search?.trim() ?? '';
+HomeCubit(this._jobApi) : super(const HomeState());
 
-    emit(
-      state.copyWith(
-        status: HomeStatus.loading,
-        errorMessage: null,
-      ),
-    );
+Future<void> fetchJobs({
+String? search,
+String? category,
+}) async {
+if (isClosed) return;
+final requestId = ++_latestRequestId;
+final query = search?.trim() ?? '';
+final selectedCategory = category?.trim() ?? '';
 
-    try {
-      final jobs = await _jobApi.getJobs(
-        search: query,
-        limit: 50,
-      );
+emit(
+  state.copyWith(
+    status: HomeStatus.loading,
+    errorMessage: null,
+  ),
+);
 
-      emit(
-        state.copyWith(
-          status: HomeStatus.success,
-          jobs: jobs,
-          errorMessage: null,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          status: HomeStatus.failure,
-          errorMessage: e.toString(),
-        ),
-      );
-    }
+try {
+  final jobs = await _jobApi.getJobs(
+    search: query.isNotEmpty ? query : selectedCategory,
+    limit: 50,
+  );
+
+  if (isClosed || requestId != _latestRequestId) {
+    return;
   }
+
+  emit(
+    state.copyWith(
+      status: HomeStatus.success,
+      jobs: jobs,
+      errorMessage: null,
+    ),
+  );
+} catch (e) {
+  if (isClosed || requestId != _latestRequestId) {
+    return;
+  }
+
+  emit(
+    state.copyWith(
+      status: HomeStatus.failure,
+      errorMessage: e.toString(),
+    ),
+  );
+}
+}
 }
