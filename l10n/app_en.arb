@@ -1,0 +1,19 @@
+{
+  "@@locale": "en",
+  "appName": "Job Finder",
+  "home": "Home",
+  "search": "Search",
+  "saved": "Saved Jobs",
+  "profile": "Profile",
+  "settings": "Settings",
+  "language": "Language",
+  "english": "English",
+  "arabic": "Arabic",
+  "darkMode": "Dark Mode",
+  "lightMode": "Light Mode",
+  "editProfile": "Edit Profile",
+  "notifications": "Notifications",
+  "jobPreferences": "Job Preferences",
+  "save": "Save",
+  "cancel": "Cancel"
+}

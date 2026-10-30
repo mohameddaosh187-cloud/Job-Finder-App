@@ -1,0 +1,19 @@
+{
+  "@@locale": "ar",
+  "appName": "البحث عن الوظائف",
+  "home": "الرئيسية",
+  "search": "بحث",
+  "saved": "الوظائف المحفوظة",
+  "profile": "الملف الشخصي",
+  "settings": "الإعدادات",
+  "language": "اللغة",
+  "english": "الإنجليزية",
+  "arabic": "العربية",
+  "darkMode": "الوضع الداكن",
+  "lightMode": "الوضع الفاتح",
+  "editProfile": "تعديل الملف الشخصي",
+  "notifications": "الإشعارات",
+  "jobPreferences": "تفضيلات الوظائف",
+  "save": "حفظ",
+  "cancel": "إلغاء"
+}
