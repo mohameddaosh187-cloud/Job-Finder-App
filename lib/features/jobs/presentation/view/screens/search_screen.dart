@@ -1,8 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 import '../../../data/api/job_api.dart';
 import '../../view_model/home_cubit.dart';
@@ -30,16 +31,14 @@ class _SearchView extends StatefulWidget {
 }
 
 class _SearchViewState extends State<_SearchView> {
-  final TextEditingController _searchController =
-      TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   Timer? _debounce;
   String _query = '';
 
   static const Color primaryBlue = Color(0xFF385CF2);
 
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   String _text(String english, String arabic) {
     return _isArabic ? arabic : english;
@@ -64,14 +63,11 @@ class _SearchViewState extends State<_SearchView> {
       _query = value.trim();
     });
 
-    _debounce = Timer(
-      const Duration(milliseconds: 500),
-      () {
-        if (!mounted) return;
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
 
-        context.read<HomeCubit>().fetchJobs(search: _query);
-      },
-    );
+      context.read<HomeCubit>().fetchJobs(search: _query);
+    });
   }
 
   void _clearSearch() {
@@ -119,8 +115,7 @@ class _SearchViewState extends State<_SearchView> {
       child: Scaffold(
         backgroundColor: backgroundColor,
         appBar: AppBar(
-          backgroundColor:
-              theme.appBarTheme.backgroundColor ?? backgroundColor,
+          backgroundColor: theme.appBarTheme.backgroundColor ?? backgroundColor,
           foregroundColor: textColor,
           surfaceTintColor: Colors.transparent,
           elevation: 0,
@@ -151,20 +146,14 @@ class _SearchViewState extends State<_SearchView> {
                     onSubmitted: _submitSearch,
                     textInputAction: TextInputAction.search,
                     textAlign: TextAlign.start,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: textColor, fontSize: 14),
                     cursorColor: primaryBlue,
                     decoration: InputDecoration(
                       hintText: _text(
                         'Job title, skill, or company',
                         'المسمى الوظيفي أو المهارة أو الشركة',
                       ),
-                      hintStyle: TextStyle(
-                        color: mutedColor,
-                        fontSize: 14,
-                      ),
+                      hintStyle: TextStyle(color: mutedColor, fontSize: 14),
                       prefixIcon: const Icon(
                         Icons.search_rounded,
                         color: primaryBlue,
@@ -172,10 +161,7 @@ class _SearchViewState extends State<_SearchView> {
                       suffixIcon: _query.isEmpty
                           ? null
                           : IconButton(
-                              tooltip: _text(
-                                'Clear search',
-                                'مسح البحث',
-                              ),
+                              tooltip: _text('Clear search', 'مسح البحث'),
                               onPressed: _clearSearch,
                               icon: Icon(
                                 Icons.close_rounded,
@@ -183,9 +169,7 @@ class _SearchViewState extends State<_SearchView> {
                               ),
                             ),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 17,
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 17),
                     ),
                   ),
                 ),
@@ -196,9 +180,7 @@ class _SearchViewState extends State<_SearchView> {
                     if (state.status == HomeStatus.initial ||
                         state.status == HomeStatus.loading) {
                       return const Center(
-                        child: CircularProgressIndicator(
-                          color: primaryBlue,
-                        ),
+                        child: CircularProgressIndicator(color: primaryBlue),
                       );
                     }
 
@@ -240,8 +222,8 @@ class _SearchViewState extends State<_SearchView> {
                               ElevatedButton(
                                 onPressed: () {
                                   context.read<HomeCubit>().fetchJobs(
-                                        search: _query,
-                                      );
+                                    search: _query,
+                                  );
                                 },
                                 child: Text(
                                   _text('Try again', 'إعادة المحاولة'),
@@ -313,22 +295,11 @@ class _SearchViewState extends State<_SearchView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                            20,
-                            0,
-                            20,
-                            12,
-                          ),
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
                           child: Text(
                             _query.isEmpty
-                                ? _text(
-                                    'Recommended jobs',
-                                    'وظائف مقترحة',
-                                  )
-                                : _text(
-                                    'Search results',
-                                    'نتائج البحث',
-                                  ),
+                                ? _text('Recommended jobs', 'وظائف مقترحة')
+                                : _text('Search results', 'نتائج البحث'),
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 17,
@@ -338,29 +309,21 @@ class _SearchViewState extends State<_SearchView> {
                         ),
                         Expanded(
                           child: ListView.builder(
-                            padding: const EdgeInsets.fromLTRB(
-                              20,
-                              0,
-                              20,
-                              20,
-                            ),
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                             itemCount: jobs.length,
                             itemBuilder: (context, index) {
                               final job = jobs[index];
 
                               return Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: 14,
-                                ),
+                                padding: const EdgeInsets.only(bottom: 14),
                                 child: JobCard(
                                   job: job,
                                   onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => JobDetailsScreen(
-                                          job: job,
-                                        ),
+                                        builder: (_) =>
+                                            JobDetailsScreen(job: job),
                                       ),
                                     );
                                   },

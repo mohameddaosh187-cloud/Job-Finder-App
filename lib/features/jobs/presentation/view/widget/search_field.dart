@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 class SearchField extends StatefulWidget {
   final TextEditingController controller;
@@ -20,8 +20,7 @@ class SearchField extends StatefulWidget {
 }
 
 class _SearchFieldState extends State<SearchField> {
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   String _text(String english, String arabic) {
     return _isArabic ? arabic : english;
@@ -76,15 +75,13 @@ class _SearchFieldState extends State<SearchField> {
         textInputAction: TextInputAction.search,
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         decoration: InputDecoration(
-          hintText: widget.hintText ??
+          hintText:
+              widget.hintText ??
               _text(
                 'Job title, company, or keyword',
                 'المسمى الوظيفي أو الشركة أو كلمة البحث',
               ),
-          prefixIcon: const Icon(
-            Icons.search,
-            color: Color(0xFF385CF2),
-          ),
+          prefixIcon: const Icon(Icons.search, color: Color(0xFF385CF2)),
           suffixIcon: widget.controller.text.isNotEmpty
               ? IconButton(
                   onPressed: () {

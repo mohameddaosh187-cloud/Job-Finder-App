@@ -2,23 +2,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:job_finder/core/routes/app_routes.dart';
-import 'package:job_finder/core/routes/theme/app_theme.dart';
-import 'package:job_finder/core/routes/theme/theme_controller.dart';
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/app_theme.dart';
+import 'package:job_finder/core/theme/theme_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 import 'package:job_finder/firebase_options.dart';
 import 'package:job_finder/l10n/app_localizations.dart';
 import 'package:job_finder/features/auth/presentation/view/screens/welcome_screen.dart';
 import 'package:job_finder/features/jobs/presentation/view/screens/main_screen.dart';
+import 'package:job_finder/features/auth/data/firebase/auth_service.dart';
+import 'package:job_finder/features/auth/presentation/view_model/auth_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase.
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // Load saved theme and language before displaying the app.
   await ThemeController.instance.loadTheme();
   await LocaleController.instance.loadLocale();
@@ -31,7 +32,9 @@ class JobFinderApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
+    return BlocProvider(
+      create: (_) => AuthCubit(AuthService()),
+      child: AnimatedBuilder(
       animation: Listenable.merge([
         ThemeController.instance,
         LocaleController.instance,
@@ -64,6 +67,7 @@ class JobFinderApp extends StatelessWidget {
           onGenerateRoute: AppRoutes.onGenerateRoute,
         );
       },
+      ),
     );
   }
 }
@@ -80,9 +84,7 @@ class AuthGate extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
-              child: CircularProgressIndicator(
-                color: AppTheme.primaryBlue,
-              ),
+              child: CircularProgressIndicator(color: AppTheme.primaryBlue),
             ),
           );
         }

@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:job_finder/core/routes/app_routes.dart';
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
-import 'package:job_finder/features/auth/data/firebase/auth_service.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:job_finder/features/auth/presentation/view_model/auth_cubit.dart';
+import 'package:job_finder/features/auth/presentation/view_model/auth_state.dart';
 
 import '../widgets/auth_header.dart';
 import '../widgets/auth_text_field.dart';
@@ -20,16 +22,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final AuthService _authService = AuthService();
 
-  bool _isLoading = false;
+  bool get _isLoading => context.watch<AuthCubit>().state.status == AuthStatus.loading;
   bool _obscurePassword = true;
 
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
-  String _text(String english, String arabic) =>
-      _isArabic ? arabic : english;
+  String _text(String english, String arabic) => _isArabic ? arabic : english;
 
   @override
   void initState() {
@@ -71,10 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return _text(
-        'Please enter your password',
-        'من فضلك أدخل كلمة المرور',
-      );
+      return _text('Please enter your password', 'من فضلك أدخل كلمة المرور');
     }
 
     if (value.length < 6) {
@@ -94,12 +90,8 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
-
     try {
-      final user = await _authService.signIn(
+      final user = await context.read<AuthCubit>().signIn(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
@@ -108,9 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final messenger = ScaffoldMessenger.of(context);
 
-      Navigator.of(context).popUntil(
-        (route) => route.isFirst,
-      );
+      Navigator.of(context).popUntil((route) => route.isFirst);
 
       messenger.showSnackBar(
         SnackBar(
@@ -167,10 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          behavior: SnackBarBehavior.floating,
-        ),
+        SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
       );
     } catch (_) {
       if (!mounted) return;
@@ -186,12 +173,6 @@ class _LoginScreenState extends State<LoginScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
     }
   }
 
@@ -210,10 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _openSignUp() {
-    Navigator.pushNamed(
-      context,
-      AppRoutes.signup,
-    );
+    Navigator.pushNamed(context, AppRoutes.signup);
   }
 
   @override
@@ -234,10 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: background,
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 20,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 430),
@@ -258,18 +233,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: navy,
                         style: IconButton.styleFrom(
                           backgroundColor: surfaceColor,
-                          side: BorderSide(
-                            color: borderColor,
-                          ),
+                          side: BorderSide(color: borderColor),
                         ),
                       ),
                       const SizedBox(height: 28),
 
                       AuthHeader(
-                        title: _text(
-                          'Welcome back!',
-                          'أهلًا بعودتك!',
-                        ),
+                        title: _text('Welcome back!', 'أهلًا بعودتك!'),
                         subtitle: _text(
                           'Sign in to continue your job search and '
                               'discover new opportunities.',
@@ -291,9 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
-                        autofillHints: const [
-                          AutofillHints.email,
-                        ],
+                        autofillHints: const [AutofillHints.email],
                         validator: _validateEmail,
                       ),
 
@@ -301,17 +269,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       AuthTextField(
                         label: _text('Password', 'كلمة المرور'),
-                        hint: _text(
-                          'Enter your password',
-                          'أدخل كلمة المرور',
-                        ),
+                        hint: _text('Enter your password', 'أدخل كلمة المرور'),
                         icon: Icons.lock_outline_rounded,
                         controller: _passwordController,
                         obscureText: _obscurePassword,
                         textInputAction: TextInputAction.done,
-                        autofillHints: const [
-                          AutofillHints.password,
-                        ],
+                        autofillHints: const [AutofillHints.password],
                         onFieldSubmitted: (_) => _login(),
                         onToggleVisibility: () {
                           setState(() {
@@ -334,10 +297,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: EdgeInsets.zero,
                           ),
                           child: Text(
-                            _text(
-                              'Forgot password?',
-                              'نسيت كلمة المرور؟',
-                            ),
+                            _text('Forgot password?', 'نسيت كلمة المرور؟'),
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -362,15 +322,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Flexible(
                             child: Text(
-                              _text(
-                                "Don't have an account?",
-                                'ليس لديك حساب؟',
-                              ),
+                              _text("Don't have an account?", 'ليس لديك حساب؟'),
                               textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: subtitle,
-                                fontSize: 13,
-                              ),
+                              style: TextStyle(color: subtitle, fontSize: 13),
                             ),
                           ),
                           const SizedBox(width: 6),
@@ -380,8 +334,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               foregroundColor: blue,
                               padding: EdgeInsets.zero,
                               minimumSize: Size.zero,
-                              tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: Text(
                               _text('Sign up', 'إنشاء حساب'),

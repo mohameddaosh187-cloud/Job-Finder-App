@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 import '../../../data/api/job_api.dart';
 import '../../view_model/home_cubit.dart';
@@ -27,8 +27,7 @@ class _MainScreenState extends State<MainScreen> {
 
   static const Color _primaryBlue = Color(0xFF385CF2);
 
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   String _text(String english, String arabic) {
     return _isArabic ? arabic : english;
@@ -39,16 +38,10 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
 
     _screens = [
-      HomeScreen(
-        createCubit: () => HomeCubit(JobApi()),
-      ),
+      HomeScreen(createCubit: () => HomeCubit(JobApi())),
       const SearchScreen(),
-      const SavedJobsScreen(
-        showBackButton: false,
-      ),
-      ProfileScreen(
-        key: ValueKey(_profileRefreshKey),
-      ),
+      const SavedJobsScreen(showBackButton: false),
+      ProfileScreen(key: ValueKey(_profileRefreshKey)),
     ];
   }
 
@@ -68,9 +61,7 @@ class _MainScreenState extends State<MainScreen> {
       if (index == 3) {
         _profileRefreshKey++;
 
-        _screens[3] = ProfileScreen(
-          key: ValueKey(_profileRefreshKey),
-        );
+        _screens[3] = ProfileScreen(key: ValueKey(_profileRefreshKey));
       }
     });
   }
@@ -93,49 +84,36 @@ class _MainScreenState extends State<MainScreen> {
             : const Color(0xFFE3EBFF);
 
         return Directionality(
-          textDirection:
-              _isArabic ? TextDirection.rtl : TextDirection.ltr,
+          textDirection: _isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: Scaffold(
-            body: IndexedStack(
-              index: _selectedIndex,
-              children: _screens,
-            ),
+            body: IndexedStack(index: _selectedIndex, children: _screens),
             bottomNavigationBar: NavigationBarTheme(
               data: NavigationBarThemeData(
                 backgroundColor: navigationBackground,
                 indicatorColor: selectedIndicator,
                 surfaceTintColor: Colors.transparent,
                 elevation: 0,
-                labelTextStyle:
-                    WidgetStateProperty.resolveWith<TextStyle?>(
-                  (states) {
-                    final selected =
-                        states.contains(WidgetState.selected);
+                labelTextStyle: WidgetStateProperty.resolveWith<TextStyle?>((
+                  states,
+                ) {
+                  final selected = states.contains(WidgetState.selected);
 
-                    return TextStyle(
-                      fontSize: 12,
-                      fontWeight:
-                          selected ? FontWeight.w700 : FontWeight.w500,
-                      color: selected
-                          ? _primaryBlue
-                          : colors.onSurfaceVariant,
-                    );
-                  },
-                ),
-                iconTheme:
-                    WidgetStateProperty.resolveWith<IconThemeData?>(
-                  (states) {
-                    final selected =
-                        states.contains(WidgetState.selected);
+                  return TextStyle(
+                    fontSize: 12,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    color: selected ? _primaryBlue : colors.onSurfaceVariant,
+                  );
+                }),
+                iconTheme: WidgetStateProperty.resolveWith<IconThemeData?>((
+                  states,
+                ) {
+                  final selected = states.contains(WidgetState.selected);
 
-                    return IconThemeData(
-                      color: selected
-                          ? _primaryBlue
-                          : colors.onSurfaceVariant,
-                      size: 24,
-                    );
-                  },
-                ),
+                  return IconThemeData(
+                    color: selected ? _primaryBlue : colors.onSurfaceVariant,
+                    size: 24,
+                  );
+                }),
               ),
               child: NavigationBar(
                 selectedIndex: _selectedIndex,

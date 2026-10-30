@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 class ProfileMenuTile extends StatelessWidget {
   final IconData icon;
@@ -36,8 +36,7 @@ class ProfileMenuTile extends StatelessWidget {
         final Color borderColor = theme.dividerColor;
 
         return Directionality(
-          textDirection:
-              isArabic ? TextDirection.rtl : TextDirection.ltr,
+          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: Material(
             color: surfaceColor,
             borderRadius: BorderRadius.circular(16),
@@ -51,9 +50,7 @@ class ProfileMenuTile extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: borderColor,
-                  ),
+                  border: Border.all(color: borderColor),
                 ),
                 child: Row(
                   children: [
@@ -64,11 +61,7 @@ class ProfileMenuTile extends StatelessWidget {
                         color: primaryColor.withValues(alpha: 0.10),
                         borderRadius: BorderRadius.circular(13),
                       ),
-                      child: Icon(
-                        icon,
-                        color: primaryColor,
-                        size: 23,
-                      ),
+                      child: Icon(icon, color: primaryColor, size: 23),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -77,8 +70,9 @@ class ProfileMenuTile extends StatelessWidget {
                         children: [
                           Text(
                             title,
-                            textAlign:
-                                isArabic ? TextAlign.right : TextAlign.left,
+                            textAlign: isArabic
+                                ? TextAlign.right
+                                : TextAlign.left,
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -88,12 +82,10 @@ class ProfileMenuTile extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             subtitle,
-                            textAlign:
-                                isArabic ? TextAlign.right : TextAlign.left,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: mutedColor,
-                            ),
+                            textAlign: isArabic
+                                ? TextAlign.right
+                                : TextAlign.left,
+                            style: TextStyle(fontSize: 12, color: mutedColor),
                           ),
                         ],
                       ),

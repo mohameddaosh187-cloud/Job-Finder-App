@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 import '../../../data/model/job_model.dart';
 import '../../../../profile/data/saved_jobs_service.dart';
@@ -9,10 +9,7 @@ import '../../../../profile/data/saved_jobs_service.dart';
 class JobDetailsScreen extends StatefulWidget {
   final JobModel job;
 
-  const JobDetailsScreen({
-    super.key,
-    required this.job,
-  });
+  const JobDetailsScreen({super.key, required this.job});
 
   static const Color primaryBlue = Color(0xFF3563E9);
   static const Color pageBackground = Color(0xFFF6F8FC);
@@ -30,8 +27,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   JobModel get job => widget.job;
 
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   String _text(String english, String arabic) {
     return _isArabic ? arabic : english;
@@ -56,9 +52,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   Future<void> _checkIfSaved() async {
     try {
-      final saved = await _savedJobsService.isSaved(
-        job.id.toString(),
-      );
+      final saved = await _savedJobsService.isSaved(job.id.toString());
 
       if (!mounted) return;
 
@@ -174,10 +168,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _text(
-              'The application link is invalid.',
-              'رابط التقديم غير صالح.',
-            ),
+            _text('The application link is invalid.', 'رابط التقديم غير صالح.'),
           ),
         ),
       );
@@ -233,16 +224,13 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
         final companyName = job.companyName.trim();
 
         return Directionality(
-          textDirection:
-              _isArabic ? TextDirection.rtl : TextDirection.ltr,
+          textDirection: _isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: Scaffold(
             backgroundColor: theme.scaffoldBackgroundColor,
             appBar: AppBar(
               title: Text(
                 _text('Job Details', 'تفاصيل الوظيفة'),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.w700),
               ),
               centerTitle: true,
               backgroundColor: theme.appBarTheme.backgroundColor,
@@ -261,9 +249,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : Icon(
                           _isSaved
@@ -282,11 +268,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: _CompanyLogo(
-                        logoUrl: job.logoUrl,
-                      ),
-                    ),
+                    Center(child: _CompanyLogo(logoUrl: job.logoUrl)),
                     const SizedBox(height: 20),
                     Center(
                       child: Text(
@@ -304,10 +286,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     Center(
                       child: Text(
                         companyName.isEmpty
-                            ? _text(
-                                'Company not specified',
-                                'الشركة غير محددة',
-                              )
+                            ? _text('Company not specified', 'الشركة غير محددة')
                             : companyName,
                         textAlign: TextAlign.center,
                         style: theme.textTheme.titleMedium?.copyWith(
@@ -372,14 +351,11 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       decoration: BoxDecoration(
                         color: theme.cardColor,
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: theme.dividerColor,
-                        ),
+                        border: Border.all(color: theme.dividerColor),
                       ),
                       child: SelectableText(
                         _plainDescription(job.description),
-                        textAlign:
-                            _isArabic ? TextAlign.right : TextAlign.left,
+                        textAlign: _isArabic ? TextAlign.right : TextAlign.left,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           height: 1.7,
                           color: colors.onSurfaceVariant,
@@ -392,9 +368,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       height: 54,
                       child: ElevatedButton.icon(
                         onPressed: () => _applyForJob(context),
-                        icon: const Icon(
-                          Icons.open_in_new_rounded,
-                        ),
+                        icon: const Icon(Icons.open_in_new_rounded),
                         label: Text(
                           _text('Apply Now', 'قدّم الآن'),
                           style: const TextStyle(
@@ -482,21 +456,12 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   String _plainDescription(String description) {
     var result = description
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
         .replaceAll(
-          RegExp(r'<br\s*/?>', caseSensitive: false),
-          '\n',
-        )
-        .replaceAll(
-          RegExp(
-            r'</(p|div|li|h[1-6])\s*>',
-            caseSensitive: false,
-          ),
+          RegExp(r'</(p|div|li|h[1-6])\s*>', caseSensitive: false),
           '\n\n',
         )
-        .replaceAll(
-          RegExp(r'<li[^>]*>', caseSensitive: false),
-          '• ',
-        )
+        .replaceAll(RegExp(r'<li[^>]*>', caseSensitive: false), '• ')
         .replaceAll(RegExp(r'<[^>]*>'), '')
         .replaceAll('&amp;', '&')
         .replaceAll('&quot;', '"')
@@ -519,9 +484,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 class _CompanyLogo extends StatelessWidget {
   final String? logoUrl;
 
-  const _CompanyLogo({
-    required this.logoUrl,
-  });
+  const _CompanyLogo({required this.logoUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -534,9 +497,7 @@ class _CompanyLogo extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: theme.dividerColor,
-        ),
+        border: Border.all(color: theme.dividerColor),
       ),
       padding: const EdgeInsets.all(12),
       child: url.isEmpty
@@ -583,10 +544,7 @@ class _InfoChip extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const _InfoChip({
-    required this.icon,
-    required this.label,
-  });
+  const _InfoChip({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -595,25 +553,16 @@ class _InfoChip extends StatelessWidget {
 
     return Container(
       constraints: const BoxConstraints(maxWidth: 300),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 10,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: theme.dividerColor,
-        ),
+        border: Border.all(color: theme.dividerColor),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 17,
-            color: JobDetailsScreen.primaryBlue,
-          ),
+          Icon(icon, size: 17, color: JobDetailsScreen.primaryBlue),
           const SizedBox(width: 7),
           Flexible(
             child: Text(
@@ -654,20 +603,14 @@ class _SectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: theme.dividerColor,
-        ),
+        border: Border.all(color: theme.dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                icon,
-                size: 20,
-                color: JobDetailsScreen.primaryBlue,
-              ),
+              Icon(icon, size: 20, color: JobDetailsScreen.primaryBlue),
               const SizedBox(width: 8),
               Text(
                 title,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 const Color _primaryBlue = Color(0xFF385CF2);
 
@@ -9,8 +9,7 @@ class JobPreferencesScreen extends StatefulWidget {
   const JobPreferencesScreen({super.key});
 
   @override
-  State<JobPreferencesScreen> createState() =>
-      _JobPreferencesScreenState();
+  State<JobPreferencesScreen> createState() => _JobPreferencesScreenState();
 }
 
 class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
@@ -32,8 +31,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
     'Internship',
   ];
 
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   String _text(String english, String arabic) {
     return _isArabic ? arabic : english;
@@ -66,14 +64,11 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
 
-      _jobTitleController.text =
-          prefs.getString('profile_job_title') ?? '';
+      _jobTitleController.text = prefs.getString('profile_job_title') ?? '';
 
-      _locationController.text =
-          prefs.getString('profile_job_location') ?? '';
+      _locationController.text = prefs.getString('profile_job_location') ?? '';
 
-      _salaryController.text =
-          prefs.getString('profile_expected_salary') ?? '';
+      _salaryController.text = prefs.getString('profile_expected_salary') ?? '';
 
       final savedJobType = prefs.getString('profile_job_type');
 
@@ -85,10 +80,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              _text(
-                'Could not load your preferences.',
-                'تعذر تحميل تفضيلاتك.',
-              ),
+              _text('Could not load your preferences.', 'تعذر تحميل تفضيلاتك.'),
             ),
           ),
         );
@@ -129,10 +121,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
         _salaryController.text.trim(),
       );
 
-      await prefs.setString(
-        'profile_job_type',
-        _jobType,
-      );
+      await prefs.setString('profile_job_type', _jobType);
 
       if (!mounted) return;
 
@@ -194,8 +183,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
         final primaryColor = colors.primary;
 
         return Directionality(
-          textDirection:
-              _isArabic ? TextDirection.rtl : TextDirection.ltr,
+          textDirection: _isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: Scaffold(
             backgroundColor: pageBackground,
             appBar: AppBar(
@@ -206,18 +194,11 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
               elevation: 0,
               title: Text(
                 _text('Job preferences', 'تفضيلات الوظائف'),
-                style: TextStyle(
-                  color: textColor,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: TextStyle(color: textColor, fontWeight: FontWeight.w800),
               ),
             ),
             body: _isLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                      color: primaryColor,
-                    ),
-                  )
+                ? Center(child: CircularProgressIndicator(color: primaryColor))
                 : SafeArea(
                     child: Form(
                       key: _formKey,
@@ -239,14 +220,11 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
                           Text(
                             _text(
                               'Set your preferences to focus on jobs '
-                              'that match your goals.',
+                                  'that match your goals.',
                               'حدد تفضيلاتك للتركيز على الوظائف '
-                              'التي تتناسب مع أهدافك.',
+                                  'التي تتناسب مع أهدافك.',
                             ),
-                            style: TextStyle(
-                              color: mutedColor,
-                              fontSize: 13,
-                            ),
+                            style: TextStyle(color: mutedColor, fontSize: 13),
                           ),
                           const SizedBox(height: 28),
                           _fieldLabel(
@@ -274,8 +252,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
                               primaryColor: primaryColor,
                             ),
                             validator: (value) {
-                              if (value == null ||
-                                  value.trim().isEmpty) {
+                              if (value == null || value.trim().isEmpty) {
                                 return _text(
                                   'Please enter your desired job title.',
                                   'من فضلك أدخل المسمى الوظيفي المطلوب.',
@@ -286,10 +263,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
                           ),
                           const SizedBox(height: 22),
                           _fieldLabel(
-                            _text(
-                              'Preferred location',
-                              'الموقع المفضل',
-                            ),
+                            _text('Preferred location', 'الموقع المفضل'),
                             textColor,
                           ),
                           const SizedBox(height: 8),
@@ -310,8 +284,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
                               primaryColor: primaryColor,
                             ),
                             validator: (value) {
-                              if (value == null ||
-                                  value.trim().isEmpty) {
+                              if (value == null || value.trim().isEmpty) {
                                 return _text(
                                   'Please enter your preferred location.',
                                   'من فضلك أدخل الموقع المفضل.',
@@ -322,10 +295,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
                           ),
                           const SizedBox(height: 22),
                           _fieldLabel(
-                            _text(
-                              'Expected salary',
-                              'الراتب المتوقع',
-                            ),
+                            _text('Expected salary', 'الراتب المتوقع'),
                             textColor,
                           ),
                           const SizedBox(height: 8),
@@ -334,10 +304,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
                             keyboardType: TextInputType.number,
                             style: TextStyle(color: textColor),
                             decoration: _inputDecoration(
-                              hint: _text(
-                                'e.g. 15000 EGP',
-                                'مثال: 15000 جنيه',
-                              ),
+                              hint: _text('e.g. 15000 EGP', 'مثال: 15000 جنيه'),
                               icon: Icons.payments_outlined,
                               textColor: textColor,
                               mutedColor: mutedColor,
@@ -346,8 +313,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
                               primaryColor: primaryColor,
                             ),
                             validator: (value) {
-                              if (value == null ||
-                                  value.trim().isEmpty) {
+                              if (value == null || value.trim().isEmpty) {
                                 return _text(
                                   'Please enter your expected salary.',
                                   'من فضلك أدخل الراتب المتوقع.',
@@ -358,10 +324,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
                           ),
                           const SizedBox(height: 22),
                           _fieldLabel(
-                            _text(
-                              'Employment type',
-                              'نوع التوظيف',
-                            ),
+                            _text('Employment type', 'نوع التوظيف'),
                             textColor,
                           ),
                           const SizedBox(height: 8),
@@ -369,10 +332,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
                             initialValue: _jobType,
                             isExpanded: true,
                             dropdownColor: surfaceColor,
-                            style: TextStyle(
-                              color: textColor,
-                              fontSize: 14,
-                            ),
+                            style: TextStyle(color: textColor, fontSize: 14),
                             iconEnabledColor: mutedColor,
                             decoration: _inputDecoration(
                               hint: _text(
@@ -391,9 +351,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
                                 value: type,
                                 child: Text(
                                   _jobTypeLabel(type),
-                                  style: TextStyle(
-                                    color: textColor,
-                                  ),
+                                  style: TextStyle(color: textColor),
                                 ),
                               );
                             }).toList(),
@@ -409,14 +367,12 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
                           SizedBox(
                             height: 52,
                             child: ElevatedButton(
-                              onPressed: _isSaving
-                                  ? null
-                                  : _savePreferences,
+                              onPressed: _isSaving ? null : _savePreferences,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: _primaryBlue,
                                 foregroundColor: Colors.white,
-                                disabledBackgroundColor:
-                                    _primaryBlue.withValues(alpha: 0.5),
+                                disabledBackgroundColor: _primaryBlue
+                                    .withValues(alpha: 0.5),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                 ),
@@ -452,10 +408,7 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
     );
   }
 
-  Widget _fieldLabel(
-    String label,
-    Color textColor,
-  ) {
+  Widget _fieldLabel(String label, Color textColor) {
     return Text(
       label,
       style: TextStyle(
@@ -477,39 +430,23 @@ class _JobPreferencesScreenState extends State<JobPreferencesScreen> {
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(
-        color: mutedColor,
-        fontSize: 13,
-      ),
-      prefixIcon: Icon(
-        icon,
-        color: primaryColor,
-      ),
+      hintStyle: TextStyle(color: mutedColor, fontSize: 13),
+      prefixIcon: Icon(icon, color: primaryColor),
       filled: true,
       fillColor: surfaceColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(
-          color: borderColor,
-        ),
+        borderSide: BorderSide(color: borderColor),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(
-          color: borderColor,
-        ),
+        borderSide: BorderSide(color: borderColor),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(
-          color: primaryColor,
-          width: 1.5,
-        ),
+        borderSide: BorderSide(color: primaryColor, width: 1.5),
       ),
-      errorStyle: const TextStyle(
-        color: Colors.redAccent,
-        fontSize: 12,
-      ),
+      errorStyle: const TextStyle(color: Colors.redAccent, fontSize: 12),
     );
   }
 }

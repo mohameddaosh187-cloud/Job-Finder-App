@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:job_finder/core/routes/app_routes.dart';
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -14,11 +14,9 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
-  String _text(String english, String arabic) =>
-      _isArabic ? arabic : english;
+  String _text(String english, String arabic) => _isArabic ? arabic : english;
 
   @override
   void initState() {
@@ -59,9 +57,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         ? const Color(0xFF0D111B)
         : const Color(0xFF17243D);
 
-    final laptopDisplayColor = isDark
-        ? const Color(0xFF252D3D)
-        : Colors.white;
+    final laptopDisplayColor = isDark ? const Color(0xFF252D3D) : Colors.white;
 
     final searchFieldColor = isDark
         ? const Color(0xFF35405A)
@@ -149,20 +145,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         Positioned(
                           left: 128,
                           top: 207,
-                          child: _line(
-                            130,
-                            9,
-                            illustrationLineColor,
-                          ),
+                          child: _line(130, 9, illustrationLineColor),
                         ),
                         Positioned(
                           left: 128,
                           top: 225,
-                          child: _line(
-                            95,
-                            9,
-                            illustrationLineColor,
-                          ),
+                          child: _line(95, 9, illustrationLineColor),
                         ),
                         Positioned(
                           left: 153,
@@ -220,8 +208,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               'Your next chapter\nstarts here.',
                               'خطوتك القادمة\nتبدأ من هنا.',
                             ),
-                            textAlign:
-                                _isArabic ? TextAlign.right : TextAlign.left,
+                            textAlign: _isArabic
+                                ? TextAlign.right
+                                : TextAlign.left,
                             style: TextStyle(
                               color: navy,
                               fontSize: _isArabic ? 27 : 29,
@@ -244,8 +233,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               'اكتشف وظائف تناسب مهاراتك وأهدافك،\n'
                                   'وطريقة العمل التي تفضلها.',
                             ),
-                            textAlign:
-                                _isArabic ? TextAlign.right : TextAlign.left,
+                            textAlign: _isArabic
+                                ? TextAlign.right
+                                : TextAlign.left,
                             style: TextStyle(
                               color: subtitle,
                               fontSize: _isArabic ? 12 : 12,
@@ -355,11 +345,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
-  static Widget _line(
-    double width,
-    double height,
-    Color color,
-  ) {
+  static Widget _line(double width, double height, Color color) {
     return Container(
       width: width,
       height: height,

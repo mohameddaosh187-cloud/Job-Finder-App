@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:job_finder/features/profile/data/saved_jobs_service.dart';
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 import '../../../data/model/job_model.dart';
 
@@ -8,11 +8,7 @@ class JobCard extends StatefulWidget {
   final JobModel job;
   final VoidCallback? onTap;
 
-  const JobCard({
-    super.key,
-    required this.job,
-    this.onTap,
-  });
+  const JobCard({super.key, required this.job, this.onTap});
 
   @override
   State<JobCard> createState() => _JobCardState();
@@ -26,8 +22,7 @@ class _JobCardState extends State<JobCard> {
 
   static const Color _primaryBlue = Color(0xFF2457D6);
 
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   String _text(String english, String arabic) {
     return _isArabic ? arabic : english;
@@ -111,10 +106,7 @@ class _JobCardState extends State<JobCard> {
                     'Job removed from saved jobs',
                     'تمت إزالة الوظيفة من المحفوظات',
                   )
-                : _text(
-                    'Job saved successfully',
-                    'تم حفظ الوظيفة بنجاح',
-                  ),
+                : _text('Job saved successfully', 'تم حفظ الوظيفة بنجاح'),
           ),
           duration: const Duration(seconds: 2),
         ),
@@ -167,9 +159,7 @@ class _JobCardState extends State<JobCard> {
         color: cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(
-            color: borderColor,
-          ),
+          side: BorderSide(color: borderColor),
         ),
         child: InkWell(
           onTap: widget.onTap,
@@ -189,8 +179,7 @@ class _JobCardState extends State<JobCard> {
                         widget.job.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        textAlign:
-                            _isArabic ? TextAlign.right : TextAlign.left,
+                        textAlign: _isArabic ? TextAlign.right : TextAlign.left,
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: titleColor,
                           fontWeight: FontWeight.bold,
@@ -201,8 +190,7 @@ class _JobCardState extends State<JobCard> {
                         widget.job.companyName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        textAlign:
-                            _isArabic ? TextAlign.right : TextAlign.left,
+                        textAlign: _isArabic ? TextAlign.right : TextAlign.left,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: mutedColor,
                         ),
@@ -257,8 +245,9 @@ class _JobCardState extends State<JobCard> {
                         const SizedBox(height: 8),
                         Text(
                           widget.job.salary!,
-                          textAlign:
-                              _isArabic ? TextAlign.right : TextAlign.left,
+                          textAlign: _isArabic
+                              ? TextAlign.right
+                              : TextAlign.left,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: titleColor,
                             fontWeight: FontWeight.w600,
@@ -278,9 +267,7 @@ class _JobCardState extends State<JobCard> {
                       ? const SizedBox(
                           width: 21,
                           height: 21,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : Icon(
                           _isSaved
@@ -297,9 +284,7 @@ class _JobCardState extends State<JobCard> {
     );
   }
 
-  Widget _buildCompanyLogo({
-    required bool isDark,
-  }) {
+  Widget _buildCompanyLogo({required bool isDark}) {
     final logo = widget.job.logoUrl;
 
     if (logo != null && logo.trim().isNotEmpty) {
@@ -320,23 +305,17 @@ class _JobCardState extends State<JobCard> {
     return _logoPlaceholder(isDark: isDark);
   }
 
-  Widget _logoPlaceholder({
-    required bool isDark,
-  }) {
+  Widget _logoPlaceholder({required bool isDark}) {
     return Container(
       width: 52,
       height: 52,
       decoration: BoxDecoration(
-        color: isDark
-            ? const Color(0xFF263755)
-            : Colors.blue.shade50,
+        color: isDark ? const Color(0xFF263755) : Colors.blue.shade50,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(
         Icons.business_outlined,
-        color: isDark
-            ? const Color(0xFFBBD0FF)
-            : Colors.blue.shade700,
+        color: isDark ? const Color(0xFFBBD0FF) : Colors.blue.shade700,
         size: 28,
       ),
     );

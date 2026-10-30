@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 class AuthTextField extends StatefulWidget {
   final String label;
@@ -40,8 +40,7 @@ class AuthTextField extends StatefulWidget {
 }
 
 class _AuthTextFieldState extends State<AuthTextField> {
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   @override
   void initState() {
@@ -72,20 +71,12 @@ class _AuthTextFieldState extends State<AuthTextField> {
     final iconColor = colors.onSurfaceVariant;
     final borderColor = theme.dividerColor;
 
-    final fieldColor = isDark
-        ? const Color(0xFF202633)
-        : Colors.white;
+    final fieldColor = isDark ? const Color(0xFF202633) : Colors.white;
 
-    OutlineInputBorder buildBorder({
-      required Color color,
-      double width = 1,
-    }) {
+    OutlineInputBorder buildBorder({required Color color, double width = 1}) {
       return OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(
-          color: color,
-          width: width,
-        ),
+        borderSide: BorderSide(color: color, width: width),
       );
     }
 
@@ -114,40 +105,29 @@ class _AuthTextFieldState extends State<AuthTextField> {
             textCapitalization: widget.textCapitalization,
             autofillHints: widget.autofillHints,
             autocorrect: widget.autocorrect,
-            textDirection:
-                widget.keyboardType == TextInputType.emailAddress
-                    ? TextDirection.ltr
-                    : (_isArabic ? TextDirection.rtl : TextDirection.ltr),
+            textDirection: widget.keyboardType == TextInputType.emailAddress
+                ? TextDirection.ltr
+                : (_isArabic ? TextDirection.rtl : TextDirection.ltr),
             textAlign: widget.keyboardType == TextInputType.emailAddress
                 ? TextAlign.left
                 : (_isArabic ? TextAlign.right : TextAlign.left),
-            style: TextStyle(
-              color: colors.onSurface,
-              fontSize: 14,
-            ),
+            style: TextStyle(color: colors.onSurface, fontSize: 14),
             cursorColor: AuthTextField.blue,
             decoration: InputDecoration(
               hintText: widget.hint,
-              hintStyle: TextStyle(
-                color: hintColor,
-                fontSize: 13,
-              ),
-              prefixIcon: Icon(
-                widget.icon,
-                color: iconColor,
-                size: 21,
-              ),
+              hintStyle: TextStyle(color: hintColor, fontSize: 13),
+              prefixIcon: Icon(widget.icon, color: iconColor, size: 21),
               suffixIcon: widget.onToggleVisibility == null
                   ? null
                   : IconButton(
                       onPressed: widget.onToggleVisibility,
                       tooltip: _isArabic
                           ? (widget.obscureText
-                              ? 'إظهار كلمة المرور'
-                              : 'إخفاء كلمة المرور')
+                                ? 'إظهار كلمة المرور'
+                                : 'إخفاء كلمة المرور')
                           : (widget.obscureText
-                              ? 'Show password'
-                              : 'Hide password'),
+                                ? 'Show password'
+                                : 'Hide password'),
                       icon: Icon(
                         widget.obscureText
                             ? Icons.visibility_off_outlined
@@ -163,15 +143,9 @@ class _AuthTextFieldState extends State<AuthTextField> {
               ),
               border: buildBorder(color: borderColor),
               enabledBorder: buildBorder(color: borderColor),
-              focusedBorder: buildBorder(
-                color: AuthTextField.blue,
-                width: 1.5,
-              ),
+              focusedBorder: buildBorder(color: AuthTextField.blue, width: 1.5),
               errorBorder: buildBorder(color: colors.error),
-              focusedErrorBorder: buildBorder(
-                color: colors.error,
-                width: 1.5,
-              ),
+              focusedErrorBorder: buildBorder(color: colors.error, width: 1.5),
             ),
           ),
         ],

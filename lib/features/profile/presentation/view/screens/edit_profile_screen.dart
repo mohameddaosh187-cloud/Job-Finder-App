@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 import '../../../data/profile_service.dart';
 
@@ -19,8 +19,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   bool _isSaving = false;
 
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   String _text(String english, String arabic) {
     return _isArabic ? arabic : english;
@@ -47,12 +46,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            _text(
-              'Please enter your name.',
-              'من فضلك أدخل اسمك.',
-            ),
-          ),
+          content: Text(_text('Please enter your name.', 'من فضلك أدخل اسمك.')),
         ),
       );
       return;
@@ -120,8 +114,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             : const Color(0xFFE3E9FF);
 
         return Directionality(
-          textDirection:
-              _isArabic ? TextDirection.rtl : TextDirection.ltr,
+          textDirection: _isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: Scaffold(
             backgroundColor: backgroundColor,
             appBar: AppBar(
@@ -131,14 +124,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               elevation: 0,
               title: Text(
                 _text('Edit profile', 'تعديل الملف الشخصي'),
-                style: TextStyle(
-                  color: textColor,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: TextStyle(color: textColor, fontWeight: FontWeight.w800),
               ),
-              iconTheme: IconThemeData(
-                color: textColor,
-              ),
+              iconTheme: IconThemeData(color: textColor),
             ),
             body: SafeArea(
               child: ListView(
@@ -176,17 +164,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         _saveProfile();
                       }
                     },
-                    style: TextStyle(
-                      color: textColor,
-                    ),
+                    style: TextStyle(color: textColor),
                     decoration: InputDecoration(
                       hintText: _text(
                         'Enter your full name',
                         'أدخل اسمك بالكامل',
                       ),
-                      hintStyle: TextStyle(
-                        color: mutedColor,
-                      ),
+                      hintStyle: TextStyle(color: mutedColor),
                       filled: true,
                       fillColor: surfaceColor,
                       prefixIcon: const Icon(
@@ -195,15 +179,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(
-                          color: borderColor,
-                        ),
+                        borderSide: BorderSide(color: borderColor),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(
-                          color: borderColor,
-                        ),
+                        borderSide: BorderSide(color: borderColor),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -222,8 +202,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _primaryBlue,
                         foregroundColor: Colors.white,
-                        disabledBackgroundColor:
-                            _primaryBlue.withValues(alpha: 0.5),
+                        disabledBackgroundColor: _primaryBlue.withValues(
+                          alpha: 0.5,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),

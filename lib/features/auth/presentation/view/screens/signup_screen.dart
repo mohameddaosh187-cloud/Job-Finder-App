@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
-import 'package:job_finder/features/auth/data/firebase/auth_service.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:job_finder/features/auth/presentation/view_model/auth_cubit.dart';
+import 'package:job_finder/features/auth/presentation/view_model/auth_state.dart';
 
 import '../widgets/auth_header.dart';
 import '../widgets/auth_text_field.dart';
@@ -25,15 +27,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  final AuthService _authService = AuthService();
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _acceptTerms = false;
-  bool _isLoading = false;
+  bool get _isLoading => context.watch<AuthCubit>().state.status == AuthStatus.loading;
 
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   String _text(String english, String arabic) {
     return _isArabic ? arabic : english;
@@ -65,10 +65,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   String? _validateName(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return _text(
-        'Please enter your full name',
-        'من فضلك أدخل اسمك بالكامل',
-      );
+      return _text('Please enter your full name', 'من فضلك أدخل اسمك بالكامل');
     }
 
     if (value.trim().length < 3) {
@@ -83,10 +80,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   String? _validateEmail(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return _text(
-        'Please enter your email',
-        'من فضلك أدخل بريدك الإلكتروني',
-      );
+      return _text('Please enter your email', 'من فضلك أدخل بريدك الإلكتروني');
     }
 
     final emailRegex = RegExp(r'^[\w.+-]+@[\w-]+\.[\w.-]+$');
@@ -103,10 +97,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return _text(
-        'Please enter a password',
-        'من فضلك أدخل كلمة المرور',
-      );
+      return _text('Please enter a password', 'من فضلك أدخل كلمة المرور');
     }
 
     if (value.length < 8) {
@@ -121,17 +112,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   String? _validateConfirmPassword(String? value) {
     if (value == null || value.isEmpty) {
-      return _text(
-        'Please confirm your password',
-        'من فضلك أكد كلمة المرور',
-      );
+      return _text('Please confirm your password', 'من فضلك أكد كلمة المرور');
     }
 
     if (value != _passwordController.text) {
-      return _text(
-        'Passwords do not match',
-        'كلمتا المرور غير متطابقتين',
-      );
+      return _text('Passwords do not match', 'كلمتا المرور غير متطابقتين');
     }
 
     return null;
@@ -159,12 +144,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
-
     try {
-      final user = await _authService.signUp(
+      final user = await context.read<AuthCubit>().signUp(
         fullName: _nameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -177,9 +158,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       Navigator.of(
         context,
         rootNavigator: true,
-      ).popUntil(
-        (route) => route.isFirst,
-      );
+      ).popUntil((route) => route.isFirst);
 
       messenger.showSnackBar(
         SnackBar(
@@ -241,10 +220,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          behavior: SnackBarBehavior.floating,
-        ),
+        SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
       );
     } catch (_) {
       if (!mounted) return;
@@ -260,12 +236,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
     }
   }
 
@@ -287,14 +257,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 20,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: 430,
-                ),
+                constraints: const BoxConstraints(maxWidth: 430),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -312,19 +277,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         style: IconButton.styleFrom(
                           backgroundColor: surfaceColor,
-                          side: BorderSide(
-                            color: borderColor,
-                          ),
+                          side: BorderSide(color: borderColor),
                         ),
                       ),
 
                       const SizedBox(height: 25),
 
                       AuthHeader(
-                        title: _text(
-                          'Create your account',
-                          'أنشئ حسابك',
-                        ),
+                        title: _text('Create your account', 'أنشئ حسابك'),
                         subtitle: _text(
                           'Start your journey to a career you love.',
                           'ابدأ رحلتك نحو الوظيفة التي تحلم بها.',
@@ -349,14 +309,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(height: 20),
 
                       AuthTextField(
-                        label: _text(
-                          'Email address',
-                          'البريد الإلكتروني',
-                        ),
-                        hint: _text(
-                          'you@example.com',
-                          'you@example.com',
-                        ),
+                        label: _text('Email address', 'البريد الإلكتروني'),
+                        hint: _text('you@example.com', 'you@example.com'),
                         icon: Icons.mail_outline_rounded,
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -386,10 +340,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(height: 20),
 
                       AuthTextField(
-                        label: _text(
-                          'Confirm password',
-                          'تأكيد كلمة المرور',
-                        ),
+                        label: _text('Confirm password', 'تأكيد كلمة المرور'),
                         hint: _text(
                           'Re-enter your password',
                           'أعد إدخال كلمة المرور',
@@ -402,8 +353,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         onFieldSubmitted: (_) => _createAccount(),
                         onToggleVisibility: () {
                           setState(() {
-                            _obscureConfirmPassword =
-                                !_obscureConfirmPassword;
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
                           });
                         },
                       ),
@@ -419,9 +369,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             child: Checkbox(
                               value: _acceptTerms,
                               activeColor: blueColor,
-                              side: BorderSide(
-                                color: subtitleColor,
-                              ),
+                              side: BorderSide(color: subtitleColor),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5),
                               ),
@@ -461,10 +409,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 'Creating account...',
                                 'جارٍ إنشاء الحساب...',
                               )
-                            : _text(
-                                'Create account',
-                                'إنشاء حساب',
-                              ),
+                            : _text('Create account', 'إنشاء حساب'),
                         icon: _isArabic
                             ? Icons.arrow_back_rounded
                             : Icons.arrow_forward_rounded,

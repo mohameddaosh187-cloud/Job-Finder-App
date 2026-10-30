@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 import '../../../data/profile_service.dart';
 import '../widgets/profile_menu_tile.dart';
@@ -24,8 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   bool _isUploadingPhoto = false;
 
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   String _text(String english, String arabic) {
     return _isArabic ? arabic : english;
@@ -37,8 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
 
     try {
-      final photoUrl =
-          await _profileService.pickAndUploadProfilePhoto();
+      final photoUrl = await _profileService.pickAndUploadProfilePhoto();
 
       if (!mounted) return;
 
@@ -62,10 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _text(
-              'Could not update photo: $e',
-              'تعذر تحديث الصورة: $e',
-            ),
+            _text('Could not update photo: $e', 'تعذر تحديث الصورة: $e'),
           ),
         ),
       );
@@ -81,9 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _editProfile() async {
     final updated = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
-        builder: (context) => const EditProfileScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const EditProfileScreen()),
     );
 
     if (updated == true && mounted) {
@@ -94,9 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _openPage(Widget page) async {
     await Navigator.push<void>(
       context,
-      MaterialPageRoute(
-        builder: (context) => page,
-      ),
+      MaterialPageRoute(builder: (context) => page),
     );
 
     if (mounted) {
@@ -142,10 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _text(
-              'Could not sign out: $e',
-              'تعذر تسجيل الخروج: $e',
-            ),
+            _text('Could not sign out: $e', 'تعذر تسجيل الخروج: $e'),
           ),
         ),
       );
@@ -181,8 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             : const Color(0xFFFFD5D5);
 
         return Directionality(
-          textDirection:
-              isArabic ? TextDirection.rtl : TextDirection.ltr,
+          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: Scaffold(
             backgroundColor: backgroundColor,
             appBar: AppBar(
@@ -192,19 +179,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               elevation: 0,
               title: Text(
                 _text('My Profile', 'ملفي الشخصي'),
-                style: TextStyle(
-                  color: textColor,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
               ),
               actions: [
                 IconButton(
                   onPressed: _editProfile,
                   tooltip: _text('Edit profile', 'تعديل الملف الشخصي'),
-                  icon: const Icon(
-                    Icons.edit_outlined,
-                    color: _primaryBlue,
-                  ),
+                  icon: const Icon(Icons.edit_outlined, color: _primaryBlue),
                 ),
                 const SizedBox(width: 8),
               ],
@@ -217,9 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   decoration: BoxDecoration(
                     color: surfaceColor,
                     borderRadius: BorderRadius.circular(22),
-                    border: Border.all(
-                      color: borderColor,
-                    ),
+                    border: Border.all(color: borderColor),
                   ),
                   child: Column(
                     children: [
@@ -232,8 +211,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             backgroundColor: avatarBackground,
                             backgroundImage:
                                 photoUrl != null && photoUrl.isNotEmpty
-                                    ? NetworkImage(photoUrl)
-                                    : null,
+                                ? NetworkImage(photoUrl)
+                                : null,
                             child: photoUrl == null || photoUrl.isEmpty
                                 ? Text(
                                     userName.isNotEmpty
@@ -290,10 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Text(
                         userEmail,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: mutedColor,
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: mutedColor, fontSize: 14),
                       ),
                       const SizedBox(height: 18),
                       OutlinedButton.icon(
@@ -304,9 +280,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: _primaryBlue,
-                          side: const BorderSide(
-                            color: _primaryBlue,
-                          ),
+                          side: const BorderSide(color: _primaryBlue),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -317,10 +291,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 26),
                 Padding(
-                  padding: const EdgeInsets.only(
-                    left: 4,
-                    bottom: 10,
-                  ),
+                  padding: const EdgeInsets.only(left: 4, bottom: 10),
                   child: Text(
                     _text('Account', 'الحساب'),
                     style: TextStyle(
@@ -347,11 +318,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'عرض وإدارة الوظائف التي حفظتها',
                   ),
                   onTap: () {
-                    _openPage(
-                      const SavedJobsScreen(
-                        showBackButton: true,
-                      ),
-                    );
+                    _openPage(const SavedJobsScreen(showBackButton: true));
                   },
                 ),
                 ProfileMenuTile(
@@ -396,9 +363,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     label: Text(_text('Sign Out', 'تسجيل الخروج')),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.redAccent,
-                      side: BorderSide(
-                        color: signOutBorderColor,
-                      ),
+                      side: BorderSide(color: signOutBorderColor),
                       backgroundColor: surfaceColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),

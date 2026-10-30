@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:job_finder/core/routes/theme/theme_controller.dart';
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/theme_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const Color _primaryBlue = Color(0xFF385CF2);

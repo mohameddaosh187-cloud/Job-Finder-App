@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 const Color _primaryBlue = Color(0xFF385CF2);
 
@@ -9,8 +9,7 @@ class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
   @override
-  State<NotificationsScreen> createState() =>
-      _NotificationsScreenState();
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
@@ -20,8 +19,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   bool _newsAndTips = false;
   bool _loading = true;
 
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   String _text(String english, String arabic) {
     return _isArabic ? arabic : english;
@@ -40,14 +38,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       if (!mounted) return;
 
       setState(() {
-        _jobAlerts =
-            prefs.getBool('notification_job_alerts') ?? true;
+        _jobAlerts = prefs.getBool('notification_job_alerts') ?? true;
         _applicationUpdates =
             prefs.getBool('notification_application_updates') ?? true;
         _recommendations =
             prefs.getBool('notification_recommendations') ?? false;
-        _newsAndTips =
-            prefs.getBool('notification_news_tips') ?? false;
+        _newsAndTips = prefs.getBool('notification_news_tips') ?? false;
         _loading = false;
       });
     } catch (_) {
@@ -76,10 +72,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _text(
-              'Notification preference saved',
-              'تم حفظ إعدادات الإشعارات',
-            ),
+            _text('Notification preference saved', 'تم حفظ إعدادات الإشعارات'),
           ),
           duration: const Duration(seconds: 1),
         ),
@@ -90,10 +83,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _text(
-              'Could not save your preference',
-              'تعذر حفظ الإعدادات',
-            ),
+            _text('Could not save your preference', 'تعذر حفظ الإعدادات'),
           ),
         ),
       );
@@ -113,9 +103,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -133,17 +122,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         final borderColor = theme.dividerColor;
 
         return Directionality(
-          textDirection:
-              _isArabic ? TextDirection.rtl : TextDirection.ltr,
+          textDirection: _isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: Scaffold(
             backgroundColor: pageBackground,
             appBar: AppBar(
               title: Text(
                 _text('Notifications', 'الإشعارات'),
-                style: TextStyle(
-                  color: textColor,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(color: textColor, fontWeight: FontWeight.w700),
               ),
               backgroundColor:
                   theme.appBarTheme.backgroundColor ?? pageBackground,
@@ -153,18 +138,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ),
             body: _loading
                 ? const Center(
-                    child: CircularProgressIndicator(
-                      color: _primaryBlue,
-                    ),
+                    child: CircularProgressIndicator(color: _primaryBlue),
                   )
                 : ListView(
                     padding: const EdgeInsets.all(20),
                     children: [
                       Text(
-                        _text(
-                          'NOTIFICATION PREFERENCES',
-                          'تفضيلات الإشعارات',
-                        ),
+                        _text('NOTIFICATION PREFERENCES', 'تفضيلات الإشعارات'),
                         style: TextStyle(
                           color: mutedColor,
                           fontSize: 12,
@@ -177,18 +157,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         decoration: BoxDecoration(
                           color: surfaceColor,
                           borderRadius: BorderRadius.circular(18),
-                          border: Border.all(
-                            color: borderColor,
-                          ),
+                          border: Border.all(color: borderColor),
                         ),
                         child: Column(
                           children: [
                             _NotificationTile(
                               icon: Icons.work_outline_rounded,
-                              title: _text(
-                                'Job alerts',
-                                'تنبيهات الوظائف',
-                              ),
+                              title: _text('Job alerts', 'تنبيهات الوظائف'),
                               subtitle: _text(
                                 'Get notified about new job opportunities',
                                 'احصل على إشعارات بفرص العمل الجديدة',
@@ -276,11 +251,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       Text(
                         _text(
                           'Your choices are saved on this device. These settings '
-                          'control your preferences; actual push notifications '
-                          'require notification delivery to be configured.',
+                              'control your preferences; actual push notifications '
+                              'require notification delivery to be configured.',
                           'يتم حفظ اختياراتك على هذا الجهاز. تتحكم هذه الإعدادات '
-                          'في تفضيلاتك، أما إشعارات الدفع الفعلية فتتطلب '
-                          'إعداد خدمة إرسال الإشعارات.',
+                              'في تفضيلاتك، أما إشعارات الدفع الفعلية فتتطلب '
+                              'إعداد خدمة إرسال الإشعارات.',
                         ),
                         style: TextStyle(
                           color: mutedColor,
@@ -325,10 +300,7 @@ class _NotificationTile extends StatelessWidget {
     final mutedColor = colors.onSurfaceVariant;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 10,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       child: Row(
         children: [
           Container(
@@ -338,10 +310,7 @@ class _NotificationTile extends StatelessWidget {
               color: iconBackground,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              icon,
-              color: _primaryBlue,
-            ),
+            child: Icon(icon, color: _primaryBlue),
           ),
           const SizedBox(width: 12),
           Expanded(

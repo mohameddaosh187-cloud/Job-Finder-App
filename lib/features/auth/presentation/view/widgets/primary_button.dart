@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
@@ -17,8 +17,7 @@ class PrimaryButton extends StatelessWidget {
 
   static const Color blue = Color(0xFF385CF2);
 
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +51,7 @@ class PrimaryButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null && isArabic) ...[
-                Icon(
-                  icon,
-                  size: 20,
-                ),
+                Icon(icon, size: 20),
                 const SizedBox(width: 10),
               ],
               Flexible(
@@ -71,10 +67,7 @@ class PrimaryButton extends StatelessWidget {
               ),
               if (icon != null && !isArabic) ...[
                 const SizedBox(width: 10),
-                Icon(
-                  icon,
-                  size: 20,
-                ),
+                Icon(icon, size: 20),
               ],
             ],
           ),

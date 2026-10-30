@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 class AuthHeader extends StatefulWidget {
   final String title;
@@ -22,8 +22,7 @@ class AuthHeader extends StatefulWidget {
 }
 
 class _AuthHeaderState extends State<AuthHeader> {
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   @override
   void initState() {
@@ -67,11 +66,7 @@ class _AuthHeaderState extends State<AuthHeader> {
                 ),
                 alignment: Alignment.center,
                 child: widget.logoIcon != null
-                    ? Icon(
-                        widget.logoIcon,
-                        color: Colors.white,
-                        size: 27,
-                      )
+                    ? Icon(widget.logoIcon, color: Colors.white, size: 27)
                     : Text(
                         widget.logoText,
                         style: const TextStyle(
@@ -85,10 +80,7 @@ class _AuthHeaderState extends State<AuthHeader> {
               const Text(
                 'JobFinder',
                 textDirection: TextDirection.ltr,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ],
           ),

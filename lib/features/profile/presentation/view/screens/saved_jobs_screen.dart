@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:job_finder/core/routes/theme/locale_controller.dart';
+import 'package:job_finder/core/theme/locale_controller.dart';
 
 import '../../../data/saved_jobs_service.dart';
 
@@ -9,10 +9,7 @@ const Color _primaryBlue = Color(0xFF385CF2);
 class SavedJobsScreen extends StatefulWidget {
   final bool showBackButton;
 
-  const SavedJobsScreen({
-    super.key,
-    this.showBackButton = true,
-  });
+  const SavedJobsScreen({super.key, this.showBackButton = true});
 
   @override
   State<SavedJobsScreen> createState() => _SavedJobsScreenState();
@@ -27,8 +24,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
   String? _error;
   String _searchQuery = '';
 
-  bool get _isArabic =>
-      LocaleController.instance.locale.languageCode == 'ar';
+  bool get _isArabic => LocaleController.instance.locale.languageCode == 'ar';
 
   String _text(String english, String arabic) {
     return _isArabic ? arabic : english;
@@ -103,10 +99,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _text(
-              'Could not remove job: $e',
-              'تعذر حذف الوظيفة: $e',
-            ),
+            _text('Could not remove job: $e', 'تعذر حذف الوظيفة: $e'),
           ),
         ),
       );
@@ -139,10 +132,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
     final filteredJobs = _jobs.where((job) {
       final title = _value(job, ['title', 'job_title']);
 
-      final company = _value(
-        job,
-        ['companyName', 'company_name', 'company'],
-      );
+      final company = _value(job, ['companyName', 'company_name', 'company']);
 
       return title.toLowerCase().contains(query) ||
           company.toLowerCase().contains(query);
@@ -152,8 +142,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
       animation: LocaleController.instance,
       builder: (context, child) {
         return Directionality(
-          textDirection:
-              _isArabic ? TextDirection.rtl : TextDirection.ltr,
+          textDirection: _isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: Scaffold(
             backgroundColor: theme.scaffoldBackgroundColor,
             appBar: AppBar(
@@ -201,17 +190,13 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
                           _searchQuery = value;
                         });
                       },
-                      style: TextStyle(
-                        color: colors.onSurface,
-                      ),
+                      style: TextStyle(color: colors.onSurface),
                       decoration: InputDecoration(
                         hintText: _text(
                           'Search saved jobs...',
                           'ابحث في الوظائف المحفوظة...',
                         ),
-                        hintStyle: TextStyle(
-                          color: colors.onSurfaceVariant,
-                        ),
+                        hintStyle: TextStyle(color: colors.onSurfaceVariant),
                         prefixIcon: Icon(
                           Icons.search_rounded,
                           color: colors.onSurfaceVariant,
@@ -220,15 +205,11 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
                         fillColor: theme.cardColor,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(
-                            color: theme.dividerColor,
-                          ),
+                          borderSide: BorderSide(color: theme.dividerColor),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(
-                            color: theme.dividerColor,
-                          ),
+                          borderSide: BorderSide(color: theme.dividerColor),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -240,9 +221,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: _buildBody(filteredJobs),
-                  ),
+                  Expanded(child: _buildBody(filteredJobs)),
                 ],
               ),
             ),
@@ -252,17 +231,13 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
     );
   }
 
-  Widget _buildBody(
-    List<Map<String, dynamic>> filteredJobs,
-  ) {
+  Widget _buildBody(List<Map<String, dynamic>> filteredJobs) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
     if (_isLoading) {
       return const Center(
-        child: CircularProgressIndicator(
-          color: _primaryBlue,
-        ),
+        child: CircularProgressIndicator(color: _primaryBlue),
       );
     }
 
@@ -294,9 +269,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
               Text(
                 _error!,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: colors.onSurfaceVariant,
-                ),
+                style: TextStyle(color: colors.onSurfaceVariant),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -343,49 +316,39 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
         itemBuilder: (context, index) {
           final job = filteredJobs[index];
 
-          final title = _value(
-            job,
-            ['title', 'job_title'],
-            fallback: _text('Untitled job', 'وظيفة بدون عنوان'),
-          );
+          final title = _value(job, [
+            'title',
+            'job_title',
+          ], fallback: _text('Untitled job', 'وظيفة بدون عنوان'));
 
-          final company = _value(
-            job,
-            ['companyName', 'company_name', 'company'],
-            fallback: _text(
-              'Company not specified',
-              'الشركة غير محددة',
-            ),
-          );
+          final company = _value(job, [
+            'companyName',
+            'company_name',
+            'company',
+          ], fallback: _text('Company not specified', 'الشركة غير محددة'));
 
-          final location = _value(
-            job,
-            ['location', 'candidate_required_location'],
-            fallback: _text(
-              'Location not specified',
-              'الموقع غير محدد',
-            ),
-          );
+          final location = _value(job, [
+            'location',
+            'candidate_required_location',
+          ], fallback: _text('Location not specified', 'الموقع غير محدد'));
 
-          final logoUrl = _value(
-            job,
-            ['logoUrl', 'company_logo', 'logo_url', 'logo'],
-          );
+          final logoUrl = _value(job, [
+            'logoUrl',
+            'company_logo',
+            'logo_url',
+            'logo',
+          ]);
 
           return Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: theme.cardColor,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(
-                color: theme.dividerColor,
-              ),
+              border: Border.all(color: theme.dividerColor),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(
-                    alpha: theme.brightness == Brightness.dark
-                        ? 0.08
-                        : 0.035,
+                    alpha: theme.brightness == Brightness.dark ? 0.08 : 0.035,
                   ),
                   blurRadius: 14,
                   offset: const Offset(0, 5),
@@ -478,9 +441,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
                 IconButton(
                   tooltip: _text('Remove saved job', 'حذف الوظيفة المحفوظة'),
                   onPressed: () => _removeJob(job),
-                  icon: const Icon(
-                    Icons.bookmark_remove_rounded,
-                  ),
+                  icon: const Icon(Icons.bookmark_remove_rounded),
                   color: colors.primary,
                 ),
               ],
@@ -526,9 +487,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: colors.onSurfaceVariant,
-              ),
+              style: TextStyle(color: colors.onSurfaceVariant),
             ),
           ],
         ),
